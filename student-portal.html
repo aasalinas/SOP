@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - School of Purpose</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Google Sign-In API -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6B4423;
+            --secondary: #8B6F47;
+            --accent: #A0826D;
+            --success: #6B4423;
+            --light: #F5F5F5;
+            --lighter: #FAFAFA;
+            --dark: #2C2C2C;
+            --grey: #E0E0E0;
+            --grey-dark: #757575;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--lighter);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        /* Auth Screen Styles */
+        .auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-logo img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .auth-logo div {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 30px;
+        }
+
+        .auth-form {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .auth-form h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--grey);
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(107, 68, 35, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group input::placeholder {
+            color: var(--grey-dark);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(107, 68, 35, 0.3);
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 68, 35, 0.4);
+        }
+
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--grey-dark);
+            font-size: 14px;
+        }
+
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .header {
+            background: var(--white);
+            padding: 20px 40px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border-bottom: 1px solid var(--grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .welcome-section h1 {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .checkin-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--grey);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .checkin-btn {
+            padding: 15px 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .checkin-btn:hover {
+            background: var(--secondary);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--grey);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .card p {
+            color: var(--grey-dark);
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .card-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            width: 100%;
+        }
+
+        .card-btn:hover {
+            background: var(--secondary);
+        }
+
+        .materials-list {
+            background: white;
+            border: 1px solid var(--grey);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .material-item {
+            border: 1px solid var(--grey);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .material-info {
+            flex: 1;
+        }
+
+        .material-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .material-meta {
+            font-size: 13px;
+            color: var(--grey-dark);
+            margin-top: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--light);
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .download-btn {
+            padding: 10px 20px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .download-btn:hover {
+            background: var(--secondary);
+        }
+
+        .donation-section {
+            background: var(--light);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .donation-section h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .donation-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .donate-btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .donate-primary {
+            background: var(--success);
+            color: white;
+        }
+
+        .donate-secondary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .donate-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .announcements {
+            background: white;
+            border: 1px solid var(--grey);
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .announcement-item {
+            padding: 15px;
+            border-left: 3px solid var(--primary);
+            background: var(--lighter);
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .announcement-date {
+            font-size: 12px;
+            color: var(--grey-dark);
+            margin-bottom: 5px;
+        }
+
+        .announcement-title {
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .announcement-text {
+            font-size: 14px;
+            color: var(--grey-dark);
+        }
+
+        /* Study Materials Section */
+        .materials-section {
+            margin-top: 40px;
+        }
+
+        .workflow-card {
+            background: white;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .workflow-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            margin-right: 5px;
+        }
+
+        .btn-info {
+            background: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .header .logo {
+                font-size: 20px;
+            }
+
+            .welcome-section h1 {
+                font-size: 28px;
+            }
+
+            .welcome-section p {
+                font-size: 16px;
+            }
+
+            .material-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .download-btn {
+                width: 100%;
+            }
+
+            .auth-container {
+                padding: 40px 30px;
+            }
+
+            .auth-logo div {
+                font-size: 24px;
+            }
+
+            .donation-buttons {
+                flex-direction: column;
+            }
+
+            .donate-btn {
+                width: 100%;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login/Signup Screen -->
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <img src="SOP IG.jpg" alt="School of Purpose Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 10px;">
+                <div style="font-size: 24px; font-weight: bold; color: var(--primary);">School of Purpose</div>
+            </div>
+            <h2 class="auth-title">Student Portal</h2>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form">
+                <h3>Login to Your Account</h3>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button class="auth-btn" onclick="handleStudentLogin()">Login</button>
+                <p class="auth-switch">Don't have an account? <a href="#" onclick="showSignupForm()">Sign Up</a></p>
+                <p class="auth-switch"><a href="sopministry.html">← Back to Home</a></p>
+            </div>
+            
+            <!-- Signup Form -->
+            <div id="signupForm" class="auth-form" style="display: none;">
+                <h3>Create Your Account</h3>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="signupUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" placeholder="Confirm your password" required>
+                </div>
+                <button class="auth-btn" onclick="handleStudentSignup()">Sign Up</button>
+                <p class="auth-switch">Already have an account? <a href="#" onclick="showLoginForm()">Login</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Portal (Hidden until logged in) -->
+    <div id="portalContent" style="display: none;">
+        <div class="header">
+            <div class="logo">
+                <img src="SOP IG.jpg" alt="School of Purpose Logo" style="width: 40px; height: 40px; object-fit: contain; margin-right: 10px; vertical-align: middle;">
+                School of Purpose Student Portal
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span id="welcomeUser" style="color: var(--primary); font-weight: 500;"></span>
+                <button class="back-btn" onclick="logoutStudent()">Logout</button>
+            </div>
+        </div>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h1>Welcome to Your Student Portal</h1>
+            <p>Access your class materials, check in, and stay connected with your ministry</p>
+        </div>
+
+        <!-- Quick Check-In -->
+        <div class="checkin-card">
+            <h2 style="color: var(--primary); margin-bottom: 10px;">✓ Quick Check-In</h2>
+            <p style="color: var(--grey-dark);">Check in for today's class</p>
+            <button class="checkin-btn" onclick="studentCheckIn()">Check In Now</button>
+            <p style="margin-top: 15px; font-size: 14px; color: var(--grey-dark);">
+                <span id="checkedInToday">0</span> students checked in today
+            </p>
+        </div>
+
+        <!-- Livestream Section -->
+        <h2 class="section-title">🎥 Live Class Stream</h2>
+        <div class="card" style="margin-bottom: 30px;">
+            <!-- Google Sign-In Notice -->
+            <div id="googleSignInNotice" style="background: #e3f2fd; padding: 25px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid var(--primary);">
+                <h3 style="color: var(--primary); margin-bottom: 15px;">🔐 Sign in with Google Required</h3>
+                <p style="margin-bottom: 15px; color: #666; line-height: 1.6;">
+                    To access unlisted YouTube videos, please sign in with your Google account. This ensures you can view class videos that are unlisted.
+                </p>
+                <div id="googleSignInButton" style="display: flex; justify-content: center; margin: 20px 0;"></div>
+                <p id="googleSignInStatus" style="margin-top: 15px; text-align: center; color: var(--grey-dark); font-size: 14px;"></p>
+            </div>
+
+            <div id="youtubeStreamSection" style="display: none;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: 600;">YouTube Live Stream URL:</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="youtubeUrl" placeholder="Paste YouTube video/live stream URL here" 
+                               style="flex: 1; padding: 10px; border: 2px solid var(--grey); border-radius: 8px;">
+                        <button class="card-btn" onclick="loadLivestream()" style="width: auto; padding: 10px 20px;">Load Stream</button>
+                    </div>
+                </div>
+                
+                <div id="livestreamContainer" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; border-radius: 10px; margin-bottom: 20px;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+                        <p style="font-size: 18px; margin-bottom: 10px;">📺 No stream loaded</p>
+                        <p style="font-size: 14px; opacity: 0.8;">Enter a YouTube URL above to watch the class</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Class Notes Section -->
+            <div style="background: var(--light); padding: 20px; border-radius: 10px;">
+                <h3 style="margin-bottom: 15px; color: var(--primary);">📝 Class Notes</h3>
+                <textarea id="classNotes" rows="8" placeholder="Take notes while watching the class..." 
+                          style="width: 100%; padding: 12px; border: 2px solid var(--grey); border-radius: 8px; font-family: inherit; resize: vertical;"></textarea>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button class="card-btn" onclick="saveNotes()" style="flex: 1;">💾 Save Notes</button>
+                    <button class="card-btn" onclick="downloadNotes()" style="flex: 1; background: var(--secondary);">📥 Download Notes</button>
+                    <button class="card-btn" onclick="clearNotes()" style="flex: 1; background: var(--grey-dark);">🗑️ Clear</button>
+                </div>
+                <p id="notesSavedMsg" style="margin-top: 10px; color: var(--success); font-size: 14px; display: none;">✓ Notes saved successfully!</p>
+            </div>
+        </div>
+
+        <!-- This Week's Classes -->
+        <h2 class="section-title">📅 Weekly Class Schedule</h2>
+        <div id="weeklySchedule" class="grid-2">
+            <!-- Schedule will be loaded dynamically -->
+        </div>
+
+
+        <!-- Study Materials -->
+        <div class="materials-section">
+            <h2 class="section-title">📚 Study Materials</h2>
+            <div class="materials-list" id="materialsList">
+                <p style="color: var(--grey-dark); text-align: center; padding: 20px;">No materials uploaded yet. Check back soon!</p>
+            </div>
+        </div>
+
+        <!-- Announcements -->
+        <h2 class="section-title">📢 Announcements</h2>
+        <div class="announcements" id="announcementsList">
+            <div class="announcement-item">
+                <div class="announcement-date">Today, 9:00 AM</div>
+                <div class="announcement-title">Class Schedule Update</div>
+                <div class="announcement-text">Wednesday's class will start 30 minutes earlier at 5:30 PM this week.</div>
+            </div>
+            <div class="announcement-item">
+                <div class="announcement-date">Yesterday</div>
+                <div class="announcement-title">New Study Materials Available</div>
+                <div class="announcement-text">Check out the new study guide for this month's topic on faith and works.</div>
+            </div>
+            <div class="announcement-item">
+                <div class="announcement-date">Dec 10</div>
+                <div class="announcement-title">Community Service Opportunity</div>
+                <div class="announcement-text">Join us this Saturday for our community outreach program. Sign up at the front desk.</div>
+            </div>
+        </div>
+
+        <!-- Donation Section with QR Code -->
+        <div class="donation-section">
+            <h2>💝 Support Our Ministry</h2>
+            <p style="color: var(--grey-dark); margin-bottom: 20px; line-height: 1.6;">
+                Your generous donations help us continue providing quality ministry education and support our community programs.
+            </p>
+            <div class="donation-buttons">
+                <button class="donate-btn donate-primary" onclick="showDonationQR('one-time')">
+                    💳 One-Time Donation
+                </button>
+                <button class="donate-btn donate-secondary" onclick="showDonationQR('monthly')">
+                    🔄 Monthly Giving
+                </button>
+            </div>
+            <p style="margin-top: 20px; font-size: 14px; color: var(--grey-dark);">
+                ✓ Tax-deductible • ✓ Secure payment • ✓ 100% goes to ministry programs
+            </p>
+        </div>
+    </div>
+
+    <!-- Donation QR Code Modal -->
+    <div id="donationQRModal" class="modal">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <h2 style="color: var(--primary); margin-bottom: 20px;">💝 <span id="donationType">Donation</span></h2>
+            <p style="margin-bottom: 20px; color: var(--grey-dark);">Scan the QR code below to make your donation</p>
+            <div id="donationQRCode" style="display: inline-block; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);"></div>
+            <div style="margin-top: 20px; padding: 15px; background: var(--light); border-radius: 10px;">
+                <p style="font-weight: 600; margin-bottom: 10px;">Payment Link:</p>
+                <input type="text" id="donationLink" readonly style="width: 100%; padding: 10px; border: 2px solid var(--grey); border-radius: 8px; font-family: monospace; font-size: 12px; margin-bottom: 10px;">
+                <button class="donate-btn donate-primary" onclick="copyDonationLink()" style="width: 100%;">📋 Copy Link</button>
+            </div>
+            <button class="donate-btn" onclick="closeDonationQR()" style="margin-top: 20px; background: var(--grey-dark);">Close</button>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        let currentStudent = null;
+        let googleUser = null;
+        let isGoogleSignedIn = false;
+
+        // Google Sign-In Configuration
+        const GOOGLE_CLIENT_ID = '550269360727-qk6jqecderpa477k09k34fmbffrspsk9.apps.googleusercontent.com';
+
+        // Initialize Google Sign-In when page loads
+        function initGoogleSignIn() {
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.initialize({
+                    client_id: GOOGLE_CLIENT_ID,
+                    callback: handleGoogleSignIn,
+                    auto_select: false
+                });
+
+                google.accounts.id.renderButton(
+                    document.getElementById('googleSignInButton'),
+                    { 
+                        theme: 'outline', 
+                        size: 'large',
+                        text: 'signin_with',
+                        width: 250
+                    }
+                );
+
+                // Check if user is already signed in
+                checkGoogleSignInStatus();
+            } else {
+                // Retry after a short delay if Google API not loaded yet
+                setTimeout(initGoogleSignIn, 500);
+            }
+        }
+
+        // Handle Google Sign-In callback
+        function handleGoogleSignIn(response) {
+            try {
+                const userInfo = parseJwt(response.credential);
+                googleUser = {
+                    email: userInfo.email,
+                    name: userInfo.name,
+                    picture: userInfo.picture
+                };
+                
+                isGoogleSignedIn = true;
+                localStorage.setItem('googleSignedIn', 'true');
+                localStorage.setItem('googleUser', JSON.stringify(googleUser));
+                
+                updateGoogleSignInUI();
+                
+                document.getElementById('googleSignInStatus').innerHTML = `
+                    <span style="color: var(--success); font-weight: 600;">✓ Signed in as ${googleUser.name}</span>
+                `;
+            } catch (error) {
+                console.error('Error handling Google Sign-In:', error);
+                document.getElementById('googleSignInStatus').innerHTML = `
+                    <span style="color: #f44336;">Error signing in. Please try again.</span>
+                `;
+            }
+        }
+
+        // Parse JWT token
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        // Check if user is already signed in
+        function checkGoogleSignInStatus() {
+            const signedIn = localStorage.getItem('googleSignedIn');
+            const savedUser = localStorage.getItem('googleUser');
+            
+            if (signedIn === 'true' && savedUser) {
+                isGoogleSignedIn = true;
+                googleUser = JSON.parse(savedUser);
+                updateGoogleSignInUI();
+            }
+        }
+
+        // Update UI based on sign-in status
+        function updateGoogleSignInUI() {
+            if (isGoogleSignedIn && googleUser) {
+                document.getElementById('googleSignInNotice').style.display = 'none';
+                document.getElementById('youtubeStreamSection').style.display = 'block';
+                
+                // Add signed-in indicator
+                const statusDiv = document.createElement('div');
+                statusDiv.id = 'googleSignedInIndicator';
+                statusDiv.style.cssText = 'background: #d4f4dd; padding: 15px; border-radius: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;';
+                statusDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="${googleUser.picture}" alt="${googleUser.name}" style="width: 40px; height: 40px; border-radius: 50%;">
+                        <div>
+                            <div style="font-weight: 600; color: #2e7d32;">✓ Signed in with Google</div>
+                            <div style="font-size: 13px; color: #666;">${googleUser.email}</div>
+                        </div>
+                    </div>
+                    <button onclick="signOutGoogle()" style="padding: 8px 16px; background: white; border: 2px solid #999; border-radius: 6px; cursor: pointer; font-weight: 500;">Sign Out</button>
+                `;
+                
+                const streamSection = document.getElementById('youtubeStreamSection');
+                if (!document.getElementById('googleSignedInIndicator')) {
+                    streamSection.insertBefore(statusDiv, streamSection.firstChild);
+                }
+            } else {
+                document.getElementById('googleSignInNotice').style.display = 'block';
+                document.getElementById('youtubeStreamSection').style.display = 'none';
+            }
+        }
+
+        // Sign out from Google
+        function signOutGoogle() {
+            if (confirm('Are you sure you want to sign out from Google? You will need to sign in again to access YouTube videos.')) {
+                isGoogleSignedIn = false;
+                googleUser = null;
+                localStorage.removeItem('googleSignedIn');
+                localStorage.removeItem('googleUser');
+                
+                // Remove signed-in indicator
+                const indicator = document.getElementById('googleSignedInIndicator');
+                if (indicator) {
+                    indicator.remove();
+                }
+                
+                updateGoogleSignInUI();
+                
+                // Clear any loaded video
+                document.getElementById('livestreamContainer').innerHTML = `
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white;">
+                        <p style="font-size: 18px; margin-bottom: 10px;">📺 No stream loaded</p>
+                        <p style="font-size: 14px; opacity: 0.8;">Enter a YouTube URL above to watch the class</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Auth Functions
+        function showSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        }
+
+        function showLoginForm() {
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        }
+
+        function handleStudentLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+
+            // Check if student exists
+            const students = JSON.parse(localStorage.getItem('studentAccounts') || '[]');
+            const student = students.find(s => s.username === username && s.password === password);
+
+            if (student) {
+                currentStudent = student;
+                localStorage.setItem('currentStudent', JSON.stringify(student));
+                showPortal();
+            } else {
+                alert('Invalid username or password. Please try again.');
+            }
+        }
+
+        function handleStudentSignup() {
+            const name = document.getElementById('signupName').value.trim();
+            const username = document.getElementById('signupUsername').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            if (!name || !username || !email || !password || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            // Check if username already exists
+            const students = JSON.parse(localStorage.getItem('studentAccounts') || '[]');
+            if (students.find(s => s.username === username)) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+
+            // Create new student account
+            const newStudent = {
+                name: name,
+                username: username,
+                email: email,
+                password: password,
+                createdAt: new Date().toISOString()
+            };
+
+            students.push(newStudent);
+            localStorage.setItem('studentAccounts', JSON.stringify(students));
+
+            alert(`Account created successfully! Welcome, ${name}!`);
+            
+            // Auto-login
+            currentStudent = newStudent;
+            localStorage.setItem('currentStudent', JSON.stringify(newStudent));
+            showPortal();
+        }
+
+        function showPortal() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('portalContent').style.display = 'block';
+            document.getElementById('welcomeUser').textContent = `Welcome, ${currentStudent.name}!`;
+            
+            // Load portal content
+            loadMaterialsList();
+            updateCheckedInCount();
+            loadAnnouncements();
+            loadSavedNotes();
+        }
+
+        function logoutStudent() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentStudent');
+                currentStudent = null;
+                document.getElementById('portalContent').style.display = 'none';
+                document.getElementById('authScreen').style.display = 'flex';
+                
+                // Reset forms
+                document.getElementById('loginUsername').value = '';
+                document.getElementById('loginPassword').value = '';
+                showLoginForm();
+            }
+        }
+
+        // Livestream Functions
+        function loadLivestream() {
+            const url = document.getElementById('youtubeUrl').value.trim();
+            
+            if (!url) {
+                alert('Please enter a YouTube URL');
+                return;
+            }
+
+            // Extract video ID from YouTube URL
+            let videoId = '';
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                videoId = match[2];
+            } else {
+                alert('Invalid YouTube URL. Please enter a valid YouTube video or live stream URL.');
+                return;
+            }
+
+            // Create iframe
+            const container = document.getElementById('livestreamContainer');
+            container.innerHTML = `
+                <iframe 
+                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+        }
+
+        // Notes Functions
+        function saveNotes() {
+            const notes = document.getElementById('classNotes').value;
+            const notesData = {
+                content: notes,
+                savedAt: new Date().toISOString(),
+                student: currentStudent.username
+            };
+            
+            localStorage.setItem(`classNotes_${currentStudent.username}`, JSON.stringify(notesData));
+            
+            const msg = document.getElementById('notesSavedMsg');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        function loadSavedNotes() {
+            const saved = localStorage.getItem(`classNotes_${currentStudent.username}`);
+            if (saved) {
+                const notesData = JSON.parse(saved);
+                document.getElementById('classNotes').value = notesData.content;
+            }
+        }
+
+        function downloadNotes() {
+            const notes = document.getElementById('classNotes').value;
+            
+            if (!notes.trim()) {
+                alert('No notes to download. Please write some notes first.');
+                return;
+            }
+
+            const blob = new Blob([notes], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `class-notes-${new Date().toISOString().split('T')[0]}.txt`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('✅ Notes downloaded successfully!');
+        }
+
+        function clearNotes() {
+            if (confirm('Are you sure you want to clear all notes? This cannot be undone.')) {
+                document.getElementById('classNotes').value = '';
+                localStorage.removeItem(`classNotes_${currentStudent.username}`);
+            }
+        }
+
+        // Donation QR Code Functions
+        function showDonationQR(type) {
+            const modal = document.getElementById('donationQRModal');
+            const qrContainer = document.getElementById('donationQRCode');
+            qrContainer.innerHTML = '';
+            
+            // Set donation type
+            document.getElementById('donationType').textContent = type === 'one-time' ? 'One-Time Donation' : 'Monthly Giving';
+            
+            // Generate donation link
+            const donationId = 'DON-' + Date.now();
+            const donationLink = `${window.location.origin}/donate?id=${donationId}&type=${type}`;
+            document.getElementById('donationLink').value = donationLink;
+            
+            // Generate QR code
+            new QRCode(qrContainer, {
+                text: donationLink,
+                width: 256,
+                height: 256,
+                colorDark: "#6B4423",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeDonationQR() {
+            document.getElementById('donationQRModal').style.display = 'none';
+        }
+
+        function copyDonationLink() {
+            const linkInput = document.getElementById('donationLink');
+            linkInput.select();
+            document.execCommand('copy');
+            alert('✅ Donation link copied to clipboard!');
+        }
+
+        // Load materials on page load
+        window.onload = function() {
+            // Initialize Google Sign-In
+            initGoogleSignIn();
+
+            // Create demo student accounts if they don't exist
+            const students = JSON.parse(localStorage.getItem('studentAccounts') || '[]');
+            if (students.length === 0) {
+                const demoStudents = [
+                    {
+                        username: 'sarah.johnson',
+                        password: 'student123',
+                        firstName: 'Sarah',
+                        lastName: 'Johnson',
+                        email: 'sarah.j@email.com',
+                        year: 'Year 1',
+                        phone: '555-0101'
+                    },
+                    {
+                        username: 'michael.brown',
+                        password: 'student123',
+                        firstName: 'Michael',
+                        lastName: 'Brown',
+                        email: 'm.brown@email.com',
+                        year: 'Year 2',
+                        phone: '555-0102'
+                    },
+                    {
+                        username: 'jennifer.davis',
+                        password: 'student123',
+                        firstName: 'Jennifer',
+                        lastName: 'Davis',
+                        email: 'jen.davis@email.com',
+                        year: 'Year 1',
+                        phone: '555-0103'
+                    }
+                ];
+                localStorage.setItem('studentAccounts', JSON.stringify(demoStudents));
+                console.log('Demo student accounts created!');
+            }
+
+            // Check if student is already logged in
+            const savedStudent = localStorage.getItem('currentStudent');
+            if (savedStudent) {
+                currentStudent = JSON.parse(savedStudent);
+                showPortal();
+            }
+            
+            // Load weekly schedule
+            loadWeeklySchedule();
+        };
+
+        // Check-in functionality
+        function studentCheckIn() {
+            const studentName = prompt('Enter your name to check in:');
+            
+            if (studentName && studentName.trim()) {
+                const today = new Date().toDateString();
+                const checkIns = JSON.parse(localStorage.getItem('checkIns') || '{}');
+                
+                if (!checkIns[today]) {
+                    checkIns[today] = [];
+                }
+                
+                if (checkIns[today].includes(studentName.trim())) {
+                    alert(`${studentName}, you've already checked in today! ✓`);
+                } else {
+                    checkIns[today].push(studentName.trim());
+                    localStorage.setItem('checkIns', JSON.stringify(checkIns));
+                    alert(`✓ Check-in successful!\n\nWelcome, ${studentName}!\n\nYou're checked in for today's class.`);
+                    updateCheckedInCount();
+                }
+            }
+        }
+
+        function updateCheckedInCount() {
+            const today = new Date().toDateString();
+            const checkIns = JSON.parse(localStorage.getItem('checkIns') || '{}');
+            const todayCount = checkIns[today] ? checkIns[today].length : 0;
+            document.getElementById('checkedInToday').textContent = todayCount;
+        }
+
+        // Load materials from localStorage (ONLY VISIBLE ONES)
+        function loadMaterialsList() {
+            const materials = JSON.parse(localStorage.getItem('studyMaterials') || '[]');
+            const materialsListDiv = document.getElementById('materialsList');
+            
+            // Filter to show only visible materials
+            const visibleMaterials = materials.filter(m => m.visible !== false);
+            
+            if (visibleMaterials.length === 0) {
+                materialsListDiv.innerHTML = '<p style="color: var(--grey-dark); text-align: center; padding: 20px;">No materials available yet. Check back soon!</p>';
+                return;
+            }
+            
+            let html = '';
+            visibleMaterials.forEach((material) => {
+                const uploadDate = new Date(material.uploadDate).toLocaleDateString();
+                const fileIcon = material.fileType && material.fileType.includes('pdf') ? '📕' : '📄';
+                const categoryLabel = material.category ? material.category.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Material';
+                
+                // Find original index for download function
+                const originalIndex = materials.indexOf(material);
+                
+                html += `
+                    <div class="material-item">
+                        <div class="material-info">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <span style="font-size: 24px;">${fileIcon}</span>
+                                <div class="material-title">${material.title}</div>
+                            </div>
+                            <span class="badge">${categoryLabel}</span>
+                            ${material.classFor && material.classFor !== 'all' ? `<span class="badge">${material.classFor.charAt(0).toUpperCase() + material.classFor.slice(1)} Class</span>` : ''}
+                            ${material.description ? `<p style="color: var(--grey-dark); font-size: 14px; margin-top: 8px;">${material.description}</p>` : ''}
+                            <div class="material-meta">
+                                📅 ${uploadDate} • 📦 ${(material.fileSize / 1024).toFixed(2)} KB • ⬇️ ${material.downloads || 0} downloads
+                            </div>
+                        </div>
+                        <button class="download-btn" onclick="downloadMaterial(${originalIndex})">
+                            ⬇️ Download
+                        </button>
+                    </div>
+                `;
+            });
+            
+            materialsListDiv.innerHTML = html;
+        }
+
+        function downloadMaterial(index) {
+            let materials = JSON.parse(localStorage.getItem('studyMaterials') || '[]');
+            
+            if (materials[index]) {
+                const material = materials[index];
+                
+                // Increment download count
+                material.downloads = (material.downloads || 0) + 1;
+                materials[index] = material;
+                localStorage.setItem('studyMaterials', JSON.stringify(materials));
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = material.fileData;
+                link.download = material.fileName;
+                link.click();
+                
+                alert(`✅ Downloading: ${material.fileName}\n\nThe file will be saved to your downloads folder.`);
+                
+                // Refresh list
+                loadMaterialsList();
+            }
+        }
+
+        // Load announcements (ONLY VISIBLE ONES)
+        function loadAnnouncements() {
+            const announcements = JSON.parse(localStorage.getItem('announcements') || '[]');
+            const announcementsDiv = document.getElementById('announcementsList');
+            
+            // Filter to show only visible announcements
+            const visibleAnnouncements = announcements.filter(a => a.visible !== false);
+            
+            if (visibleAnnouncements.length > 0) {
+                let html = '';
+                visibleAnnouncements.forEach(announcement => {
+                    const date = new Date(announcement.date).toLocaleDateString();
+                    const priorityColor = announcement.priority === 'urgent' ? '#f44336' : 
+                                         announcement.priority === 'important' ? '#ff9800' : 'var(--primary)';
+                    
+                    html += `
+                        <div class="announcement-item" style="border-left-color: ${priorityColor};">
+                            <div class="announcement-date">${date}</div>
+                            <div class="announcement-title">
+                                ${announcement.title}
+                                ${announcement.priority && announcement.priority !== 'normal' ? `<span style="background: ${priorityColor}; color: white; padding: 2px 8px; border-radius: 12px; font-size: 10px; margin-left: 8px; text-transform: uppercase;">${announcement.priority}</span>` : ''}
+                            </div>
+                            <div class="announcement-text">${announcement.message}</div>
+                        </div>
+                    `;
+                });
+                announcementsDiv.innerHTML = html;
+            } else {
+                announcementsDiv.innerHTML = `
+                    <div class="announcement-item">
+                        <div class="announcement-title">No announcements at this time</div>
+                        <div class="announcement-text">Check back later for updates from your instructor.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Load weekly schedule from localStorage
+        function loadWeeklySchedule() {
+            const schedule = JSON.parse(localStorage.getItem('classSchedule') || '[]');
+            const scheduleContainer = document.getElementById('weeklySchedule');
+            
+            if (!scheduleContainer) return;
+            
+            if (schedule.length === 0) {
+                // Default schedule if none exists
+                const defaultSchedule = [
+                    {
+                        day: 'Tuesday',
+                        title: 'Year 1 Class',
+                        time: '6:30 PM - 9:30 PM',
+                        topic: 'Introduction to Faith & Biblical Foundations',
+                        description: 'Understanding Grace and Mercy, Biblical Foundations, Prayer and Worship'
+                    },
+                    {
+                        day: 'Thursday',
+                        title: 'Year 2 Class',
+                        time: '6:30 PM - 9:30 PM',
+                        topic: 'Advanced Biblical Studies & Ministry',
+                        description: 'The Parables of Jesus, Ministry Leadership, Spiritual Gifts'
+                    }
+                ];
+                localStorage.setItem('classSchedule', JSON.stringify(defaultSchedule));
+                renderSchedule(defaultSchedule);
+            } else {
+                renderSchedule(schedule);
+            }
+        }
+
+        function renderSchedule(schedule) {
+            const scheduleContainer = document.getElementById('weeklySchedule');
+            let html = '';
+            
+            schedule.forEach((classItem, index) => {
+                html += `
+                    <div class="workflow-card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div>
+                                <h4 style="color: var(--primary); margin-bottom: 5px;">${classItem.day} - ${classItem.title}</h4>
+                                <p style="color: var(--grey-dark); font-size: 14px;">${classItem.time}</p>
+                            </div>
+                            <span class="status-badge" style="background: #e3f2fd; color: #1976d2;">Upcoming</span>
+                        </div>
+                        <p style="margin-bottom: 8px; color: var(--dark); font-weight: 600;">Topic: ${classItem.topic}</p>
+                        <p style="margin-bottom: 15px; color: #666; font-size: 14px;">${classItem.description}</p>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn btn-info" onclick="viewClassNotes(${index})" style="flex: 1;">📝 View Notes</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            scheduleContainer.innerHTML = html;
+        }
+
+        // Class notes
+        function viewClassNotes(classIndex) {
+            const schedule = JSON.parse(localStorage.getItem('classSchedule') || '[]');
+            
+            if (schedule[classIndex]) {
+                const classItem = schedule[classIndex];
+                const notes = `Class Notes: ${classItem.topic}\n\n${classItem.day} - ${classItem.time}\n\n${classItem.description}\n\nFor detailed notes, please check the Study Materials section.`;
+                alert(notes);
+            }
+        }
+
+
+    </script>
+</body>
+</html>

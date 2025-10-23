@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Sign-In Checklist - School of Purpose</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6B4423;
+            --secondary: #8B6F47;
+            --accent: #A0826D;
+            --success: #2e7d32;
+            --light: #F5F5F5;
+            --lighter: #FAFAFA;
+            --dark: #2C2C2C;
+            --grey: #E0E0E0;
+            --grey-dark: #757575;
+            --white: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--lighter);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .header {
+            background: var(--white);
+            padding: 20px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 300;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        .date-display {
+            padding: 12px 20px;
+            background: var(--light);
+            border-radius: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .date-main {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .class-time {
+            font-size: 14px;
+            color: var(--grey-dark);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .stats-badge {
+            padding: 10px 20px;
+            background: var(--success);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--light);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: transparent;
+            color: var(--grey-dark);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: var(--light);
+        }
+
+        .search-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--grey);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 68, 35, 0.1);
+        }
+
+        .checklist-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--grey);
+        }
+
+        .checklist-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .student-card {
+            border: 2px solid var(--grey);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .student-card.checked {
+            border-color: var(--success);
+            background: #f1f8f4;
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+        }
+
+        .student-checkbox {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            accent-color: var(--success);
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .student-year {
+            font-size: 13px;
+            color: var(--grey-dark);
+            display: inline-block;
+            padding: 3px 10px;
+            background: var(--light);
+            border-radius: 12px;
+        }
+
+        .checkin-time {
+            font-size: 12px;
+            color: var(--success);
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--grey-dark);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .header {
+                position: static;
+                box-shadow: none;
+                border-bottom: 2px solid #000;
+            }
+
+            .student-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .student-card {
+                border: 1px solid #000;
+                page-break-inside: avoid;
+            }
+
+            .checklist-container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .header-left, .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .student-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bulk-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header no-print">
+        <div class="header-left">
+            <div class="logo">
+                <img src="SOP IG.jpg" alt="School of Purpose Logo">
+                <div class="logo-text">School of Purpose</div>
+            </div>
+            <div class="date-display" id="currentDate"></div>
+        </div>
+        <div class="header-right">
+            <div class="stats-badge" id="checkinStats">0 / 0 Checked In</div>
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+            <button class="btn btn-secondary" onclick="exportToCSV()">📥 Export</button>
+            <button class="btn btn-primary" onclick="resetCheckIns()">🔄 Reset</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-bar no-print">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search students by name..." onkeyup="filterStudents()">
+        </div>
+
+        <div class="checklist-container">
+            <div class="checklist-header">
+                <div>
+                    <div class="checklist-title" id="checklistTitle">Student Sign-In Checklist</div>
+                    <p style="color: var(--grey-dark); margin-top: 8px;">Click on a student card to check them in</p>
+                </div>
+                <div class="bulk-actions no-print">
+                    <button class="btn btn-secondary" onclick="checkAllVisible()">✓ Check All</button>
+                    <button class="btn btn-secondary" onclick="uncheckAllVisible()">✕ Uncheck All</button>
+                </div>
+            </div>
+
+            <div class="student-grid" id="studentGrid">
+                <!-- Students will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real student data from the provided CSV
+        const realStudents = [
+            { name: "Alexa (Lexie) Taylor", email: "alexact9@yahoo.com", phone: "9046077768", year: 1 },
+            { name: "Amanda Mendez", email: "a.mendez0509@gmail.com", phone: "602-618-7724", year: 1 },
+            { name: "Amber Diaz", email: "Ad7298@hotmail.com", phone: "6236285461", year: 1 },
+            { name: "Amy Gaertner", email: "amgaertner1@gmail.com", phone: "", year: 1 },
+            { name: "Angelica Miller", email: "Angelicamariemiller@gmail.com", phone: "6237156588", year: 1 },
+            { name: "Angelo Garay", email: "AGaray4@gmail.com", phone: "6026208899", year: 1 },
+            { name: "Annette Martinez", email: "agmartinez1102@gmail.com", phone: "6026924670", year: 1 },
+            { name: "Ashleyann Perez", email: "aanvperez@gmail.com", phone: "2142413219", year: 1 },
+            { name: "Carissa Josefowicz", email: "takarachazz@yahoo.com", phone: "4805260650", year: 1 },
+            { name: "Cassi (Cassandra) Igo", email: "cass.igo4@gmail.com", phone: "3073593172", year: 1 },
+            { name: "Chelsey Sands", email: "chelsey_sands@yahoo.com", phone: "520-954-0304", year: 1 },
+            { name: "Christina Mendibles", email: "tina.mendibles91@gmail.com", phone: "6232608545", year: 1 },
+            { name: "Chyna Coleman", email: "chynacoleman08@gmail.com", phone: "602-862-8867", year: 1 },
+            { name: "Crystal Manley", email: "manleycrystal9@gmail.com", phone: "6028038132", year: 1 },
+            { name: "Daniella Vega", email: "daniellavega777@gmail.com", phone: "7143090786", year: 1 },
+            { name: "Danitza Angulo", email: "danitzasiqueiros7@gmail.com", phone: "5202445449", year: 1 },
+            { name: "Danyelle White", email: "danyellemorgan37@gmail.com", phone: "6028196608", year: 1 },
+            { name: "Davion Green", email: "daviongreen0502@gmail.com", phone: "", year: 1 },
+            { name: "Deborah Dee", email: "dee_deborah@hotmail.com", phone: "602-517-1578", year: 1 },
+            { name: "Easton Reigle", email: "eastonkimball.cutco@gmail.com", phone: "602-882-5139", year: 1 },
+            { name: "Elijah Aguiling-Hinton", email: "elijah99.0212@gmail.com", phone: "4807216824", year: 1 },
+            { name: "Ethan Wapniarski", email: "ewapniarski@yahoo.com", phone: "+1 (971) 272-5575", year: 1 },
+            { name: "Jaime Valdez", email: "raider8418@yahoo.com", phone: "4803107103", year: 1 },
+            { name: "Jassel Sanchez", email: "jasselpn@gmail.com", phone: "5202447416", year: 1 },
+            { name: "Jeanne Williams", email: "wjeanne72@yahoo.com", phone: "5098289930", year: 1 },
+            { name: "Jen Grotte", email: "jengrotte@outlook.com", phone: "701-770-4202", year: 1 },
+            { name: "Jenna Foglesong", email: "Juanvaldanyer28@gmail.com", phone: "6027401772", year: 1 },
+            { name: "Joanna Aguilar", email: "joannaa10028@gmail.com", phone: "4804696693", year: 1 },
+            { name: "Joshua Smolenski", email: "alaskanthunder@gmail.com", phone: "9705070901", year: 1 },
+            { name: "Kristine Monaghan", email: "kristinejmo@gmail.com", phone: "", year: 1 },
+            { name: "Leslie Favor", email: "leslieafavor@outlook.com", phone: "4807709402", year: 1 },
+            { name: "Lolita Owen", email: "oummiss1@gmail.com", phone: "5206126993", year: 1 },
+            { name: "Maria Giles", email: "giles2026@gmail.com", phone: "480-886-7638", year: 1 },
+            { name: "Maria Ruiz", email: "mariasbills2017@gmail.com", phone: "6239866285", year: 1 },
+            { name: "Marie Hinton", email: "Maiah31@yahoo.com", phone: "4808692616", year: 1 },
+            { name: "Martha Gonzalez", email: "marthaveryblessedone@gmail.com", phone: "", year: 1 },
+            { name: "Melissa Hernandez", email: "Honeeb26@gmail.com", phone: "602-446-3373", year: 1 },
+            { name: "Monique Quiñonez", email: "monique.quinon@yahoo.com", phone: "5205480717", year: 1 },
+            { name: "Natasha Sims", email: "natasha.r.sims@gmail.com", phone: "7622570555", year: 1 },
+            { name: "Nora Colindres", email: "Colindres.nora@gmail.com", phone: "5203015441", year: 1 },
+            { name: "Omolade Ogunniyi", email: "Omoladeprm@outlook.com", phone: "9282329075", year: 1 },
+            { name: "Robin Lemieux", email: "robin.lemieux21@gmail.com", phone: "6027852653", year: 1 },
+            { name: "Ryleigh Wolfington", email: "rwolfington95@gmail.com", phone: "4252630708", year: 1 },
+            { name: "Sarahjean Perez", email: "Cviisj@gmail.com", phone: "4698627816", year: 1 },
+            { name: "Sherinda Little", email: "sherindal@gmail.com", phone: "4807201144", year: 1 },
+            { name: "Tacia Scott", email: "tacia.scott@gmail.com", phone: "6025505048", year: 1 },
+            { name: "Takara Wade", email: "tw.day2day@gmail.com", phone: "4806527211", year: 1 },
+            { name: "Tracy Porterfield", email: "Tporterfield07@gmail.com", phone: "3129988259", year: 1 },
+            { name: "Victoria Hall", email: "victoriahall34@gmail.com", phone: "7739644251", year: 1 },
+            { name: "Marlene Lomeli Nelson", email: "mblnelson@outlook.com", phone: "602-790-2194", year: 2 },
+            { name: "Latisha Trull", email: "latisha2p@gmail.com", phone: "6022149738", year: 2 },
+            { name: "Jess", email: "Sayjesstothehouse@gmail.com", phone: "4809749231", year: 2 }
+        ];
+
+        let currentTab = 'all';
+        let checkIns = {};
+        let filteredStudents = [];
+
+        // Initialize
+        window.onload = function() {
+            // Store real students in localStorage
+            localStorage.setItem('realStudents', JSON.stringify(realStudents));
+            
+            // Load check-ins from localStorage
+            const today = new Date().toDateString();
+            const savedCheckIns = localStorage.getItem('studentCheckIns');
+            if (savedCheckIns) {
+                const allCheckIns = JSON.parse(savedCheckIns);
+                checkIns = allCheckIns[today] || {};
+            }
+            
+            // Display current date
+            updateDateDisplay();
+            
+            // Load students
+            loadStudents();
+        };
+
+        function updateDateDisplay() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', options);
+            
+            // Get current time
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            // Display format: "Monday, December 16, 2024" with class time below
+            document.getElementById('currentDate').innerHTML = `
+                <div class="date-main">${dateString}</div>
+                <div class="class-time">Class Time: 6:30 PM - 9:30 PM</div>
+            `;
+        }
+
+        function getDisplayName(fullName) {
+            // Extract first name and last name
+            const parts = fullName.trim().split(' ');
+            
+            // Handle names with parentheses like "Alexa (Lexie) Taylor"
+            let firstName = parts[0];
+            let lastName = parts[parts.length - 1];
+            
+            // Get first initial
+            const firstInitial = firstName.charAt(0).toUpperCase();
+            
+            // Return formatted name
+            return `${firstInitial}. ${lastName}`;
+        }
+
+        function loadStudents() {
+            let studentsToShow = [...realStudents];
+            
+            // Sort alphabetically by last name
+            studentsToShow.sort((a, b) => {
+                const lastNameA = a.name.split(' ').pop();
+                const lastNameB = b.name.split(' ').pop();
+                return lastNameA.localeCompare(lastNameB);
+            });
+            
+            filteredStudents = studentsToShow;
+            renderStudents(studentsToShow);
+            updateStats();
+        }
+
+        function renderStudents(students) {
+            const grid = document.getElementById('studentGrid');
+            
+            if (students.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>No students found</h3>
+                        <p>Try adjusting your search or filter</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            students.forEach((student, index) => {
+                const displayName = getDisplayName(student.name);
+                const isChecked = checkIns[student.email] ? true : false;
+                const checkedClass = isChecked ? 'checked' : '';
+                const checkinTime = checkIns[student.email] || '';
+                
+                html += `
+                    <div class="student-card ${checkedClass}" onclick="toggleCheckIn('${student.email}', '${student.name.replace(/'/g, "\\'")}')">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" class="student-checkbox" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleCheckIn('${student.email}', '${student.name.replace(/'/g, "\\'")}')">
+                        </div>
+                        <div class="student-info">
+                            <div class="student-name">${displayName}</div>
+                            ${isChecked ? `<div class="checkin-time">✓ Checked in at ${checkinTime}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        function toggleCheckIn(email, fullName) {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            if (checkIns[email]) {
+                // Uncheck
+                delete checkIns[email];
+            } else {
+                // Check in
+                checkIns[email] = timeString;
+            }
+            
+            // Save to localStorage
+            saveCheckIns();
+            
+            // Reload display
+            filterStudents();
+        }
+
+        function saveCheckIns() {
+            const today = new Date().toDateString();
+            const savedCheckIns = localStorage.getItem('studentCheckIns');
+            let allCheckIns = savedCheckIns ? JSON.parse(savedCheckIns) : {};
+            
+            allCheckIns[today] = checkIns;
+            localStorage.setItem('studentCheckIns', JSON.stringify(allCheckIns));
+            
+            updateStats();
+        }
+
+        function updateStats() {
+            const totalStudents = filteredStudents.length;
+            const checkedInCount = filteredStudents.filter(s => checkIns[s.email]).length;
+            
+            document.getElementById('checkinStats').textContent = `${checkedInCount} / ${totalStudents} Checked In`;
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update title
+            const titles = {
+                'all': 'All Students Sign-In',
+                'year1': 'Year 1 Students Sign-In',
+                'year2': 'Year 2 Students Sign-In'
+            };
+            document.getElementById('checklistTitle').textContent = titles[tab];
+            
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            
+            // Reload students
+            loadStudents();
+        }
+
+        function filterStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            let studentsToShow = [...realStudents];
+            
+            // Filter by search
+            if (searchTerm) {
+                studentsToShow = studentsToShow.filter(s => 
+                    s.name.toLowerCase().includes(searchTerm) ||
+                    getDisplayName(s.name).toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Sort alphabetically
+            studentsToShow.sort((a, b) => {
+                const lastNameA = a.name.split(' ').pop();
+                const lastNameB = b.name.split(' ').pop();
+                return lastNameA.localeCompare(lastNameB);
+            });
+            
+            filteredStudents = studentsToShow;
+            renderStudents(studentsToShow);
+            updateStats();
+        }
+
+        function checkAllVisible() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            filteredStudents.forEach(student => {
+                if (!checkIns[student.email]) {
+                    checkIns[student.email] = timeString;
+                }
+            });
+            
+            saveCheckIns();
+            filterStudents();
+        }
+
+        function uncheckAllVisible() {
+            if (confirm('Are you sure you want to uncheck all visible students?')) {
+                filteredStudents.forEach(student => {
+                    delete checkIns[student.email];
+                });
+                
+                saveCheckIns();
+                filterStudents();
+            }
+        }
+
+        function resetCheckIns() {
+            if (confirm('Are you sure you want to reset all check-ins for today? This cannot be undone.')) {
+                checkIns = {};
+                saveCheckIns();
+                filterStudents();
+            }
+        }
+
+        function exportToCSV() {
+            const today = new Date().toLocaleDateString();
+            const headers = ['Student Name', 'Display Name', 'Year', 'Email', 'Phone', 'Checked In', 'Check-In Time'];
+            const csvData = [headers];
+            
+            filteredStudents.forEach(student => {
+                const displayName = getDisplayName(student.name);
+                const isChecked = checkIns[student.email] ? 'Yes' : 'No';
+                const checkinTime = checkIns[student.email] || '';
+                
+                csvData.push([
+                    student.name,
+                    displayName,
+                    `Year ${student.year}`,
+                    student.email,
+                    student.phone,
+                    isChecked,
+                    checkinTime
+                ]);
+            });
+            
+            const csvContent = csvData.map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `student-signin-${today.replace(/\//g, '-')}.csv`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('✅ Check-in data exported successfully!');
+        }
+    </script>
+</body>
+</html>
