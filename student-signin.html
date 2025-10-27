@@ -332,6 +332,116 @@
             }
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 2px solid var(--grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .close {
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--grey-dark);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--grey);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(107, 68, 35, 0.1);
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .modal-footer .btn {
+            flex: 1;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -360,6 +470,19 @@
             .btn {
                 width: 100%;
             }
+
+            .modal-content {
+                width: 95%;
+                margin: 20px;
+            }
+
+            .modal-header {
+                padding: 20px;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -381,14 +504,22 @@
     </div>
 
     <div class="container">
+        <div class="tabs no-print">
+            <button class="tab active" onclick="switchTab('year1')">Year 1 Students</button>
+            <button class="tab" onclick="switchTab('year2')">Year 2 Students</button>
+        </div>
+
         <div class="search-bar no-print">
             <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search students by name..." onkeyup="filterStudents()">
+            <button class="btn btn-primary" onclick="openAddStudentModal()" style="margin-top: 10px; width: 100%;">
+                ➕ Name Not on List? Add Yourself
+            </button>
         </div>
 
         <div class="checklist-container">
             <div class="checklist-header">
                 <div>
-                    <div class="checklist-title" id="checklistTitle">Student Sign-In Checklist</div>
+                    <div class="checklist-title" id="checklistTitle">Year 1 Students Sign-In</div>
                     <p style="color: var(--grey-dark); margin-top: 8px;">Click on a student card to check them in</p>
                 </div>
                 <div class="bulk-actions no-print">
@@ -403,9 +534,47 @@
         </div>
     </div>
 
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Your Name</h2>
+                <span class="close" onclick="closeAddStudentModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--grey-dark); margin-bottom: 20px;">
+                    Don't see your name on the list? Add yourself here and we'll update our records.
+                </p>
+                <form id="addStudentForm" onsubmit="addNewStudent(event)">
+                    <div class="form-group">
+                        <label for="newFirstName">First Name *</label>
+                        <input type="text" id="newFirstName" class="form-input" required placeholder="Enter your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="newLastName">Last Name *</label>
+                        <input type="text" id="newLastName" class="form-input" required placeholder="Enter your last name">
+                    </div>
+                    <div class="form-group">
+                        <label for="newStudentYear">Year *</label>
+                        <select id="newStudentYear" class="form-input" required>
+                            <option value="">Select your year</option>
+                            <option value="1">Year 1</option>
+                            <option value="2">Year 2</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddStudentModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add & Check In</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Real student data from the provided CSV
-        const realStudents = [
+        // YEAR 1 STUDENTS - $250 per unit (5 units per semester)
+        const year1Students = [
             { name: "Alexa (Lexie) Taylor", email: "alexact9@yahoo.com", phone: "9046077768", year: 1 },
             { name: "Amanda Mendez", email: "a.mendez0509@gmail.com", phone: "602-618-7724", year: 1 },
             { name: "Amber Diaz", email: "Ad7298@hotmail.com", phone: "6236285461", year: 1 },
@@ -455,14 +624,52 @@
             { name: "Takara Wade", email: "tw.day2day@gmail.com", phone: "4806527211", year: 1 },
             { name: "Tracy Porterfield", email: "Tporterfield07@gmail.com", phone: "3129988259", year: 1 },
             { name: "Victoria Hall", email: "victoriahall34@gmail.com", phone: "7739644251", year: 1 },
-            { name: "Marlene Lomeli Nelson", email: "mblnelson@outlook.com", phone: "602-790-2194", year: 2 },
-            { name: "Latisha Trull", email: "latisha2p@gmail.com", phone: "6022149738", year: 2 },
-            { name: "Jess", email: "Sayjesstothehouse@gmail.com", phone: "4809749231", year: 2 }
+        ];
+        // YEAR 2 STUDENTS - $280 per unit (5 units per semester)
+        const year2Students = [
+            { name: "Paris Ulvog", email: "ulvog.paris@gmail.com", phone: "6233875511", year: 2 },
+            { name: "Caprisha Williams", email: "caprisha81@gmail.com", phone: "6025507701", year: 2 },
+            { name: "Neftali Rivera", email: "jeyandtal@yahoo.com", phone: "2038247669", year: 2 },
+            { name: "Jessica Rivera", email: "jeyjey2282@yahoo.com", phone: "2035061167", year: 2 },
+            { name: "Carmen Coleman", email: "carmenlcoleman2016@gmail.com", phone: "4808404860", year: 2 },
+            { name: "Isis Bennifield", email: "isis.bennifield@gmail.com", phone: "6025021881", year: 2 },
+            { name: "Jaydan Herrera", email: "jaydanpopo@gmail.com", phone: "6025582730", year: 2 },
+            { name: "Erika Lambert", email: "erikatownsend.dpt@gmail.com", phone: "", year: 2 },
+            { name: "Ty'Ran Lambert", email: "tyranlambert@gmail.com", phone: "3173246595", year: 2 },
+            { name: "Ana Maria Lara", email: "Analara4949@gmail.com", phone: "602-793-4949", year: 2 },
+            { name: "Marissa Castillo", email: "m.ambearxo@gmail.com", phone: "4802598479", year: 2 },
+            { name: "Onjalai Brown", email: "onjalaiis@gmail.com", phone: "5039353812", year: 2 },
+            { name: "Shauna Ash", email: "shaunaash01@gmail.com", phone: "6025509865", year: 2 },
+            { name: "IKA Sagayo", email: "csagayo@gmail.com", phone: "6028103182", year: 2 },
+            { name: "Daniel Ash", email: "Dan911iel@gmail.com", phone: "6025509927", year: 2 },
+            { name: "Cassandra Davis", email: "cassandraortiz07@gmail.com", phone: "8154091948", year: 2 },
+            { name: "Andre Beverly", email: "andre.d.beverly@gmail.com", phone: "463-222-1333", year: 2 },
+            { name: "Cne' Townsel", email: "cnetownsel@gmail.com", phone: "6147021166", year: 2 },
+            { name: "Katalina Patino", email: "katalinapatino@yahoo.com", phone: "2094092858", year: 2 },
+            { name: "Karizma Malone", email: "malonekarizma1@gmail.com", phone: "4804301693", year: 2 },
+            { name: "Elizabeth Diaz", email: "d_elizabeth35@yahoo.com", phone: "480-635-6157", year: 2 },
+            { name: "Kenyan Keegan", email: "keeganlive@live.com", phone: "6026393968", year: 2 },
+            { name: "Martha Gonzalez", email: "marthaveryblessedone@gmail.com", phone: "", year: 2 },
+            { name: "Mambi Ashu", email: "Laurettaashu@gmail.com", phone: "678-895-4009", year: 2 },
+            { name: "Erica Cardenas", email: "erica@cardenasmarketing.com", phone: "602-451-8719", year: 2 },
+            { name: "Azsaunna Bryant", email: "azsaunna@gmail.com", phone: "2296039669", year: 2 },
+            { name: "Cynthia Muse", email: "cynthiamuse89@gmail.com", phone: "6025270990", year: 2 },
+            { name: "Bernadette Ramos", email: "bernadetteramos@outlook.com", phone: "602-677-9136", year: 2 },
+            { name: "Jennifer Atudoroae", email: "jenniferatud@gmail.com", phone: "6024590881", year: 2 },
+            { name: "Gihan Viani", email: "Vianigihan@gmail.com", phone: "4046322097", year: 2 },
+            { name: "Michelle Sagayo", email: "mmsagayo@gmail.com", phone: "4802776302", year: 2 },
+            { name: "Jen Grotte", email: "jengrotte@outlook.com", phone: "701-770-4202", year: 2 },
+            { name: "Adali Payan", email: "Adaligabriela1024@gmail.com", phone: "6023918838", year: 2 },
+            { name: "Demian van der Nat", email: "Demian_vdnat@hotmail.com", phone: "6232751141", year: 2 },
+            { name: "Garner Denise", email: "Drgarner84@yahoo.com", phone: "7605191588", year: 2 }
         ];
 
-        let currentTab = 'all';
+        // Combine all students
+        const realStudents = [...year1Students, ...year2Students];
+
         let checkIns = {};
         let filteredStudents = [];
+        let currentTab = 'year1'; // Track current tab
 
         // Initialize
         window.onload = function() {
@@ -517,6 +724,13 @@
         function loadStudents() {
             let studentsToShow = [...realStudents];
             
+            // Filter by current tab
+            if (currentTab === 'year1') {
+                studentsToShow = studentsToShow.filter(s => s.year === 1);
+            } else if (currentTab === 'year2') {
+                studentsToShow = studentsToShow.filter(s => s.year === 2);
+            }
+            
             // Sort alphabetically by last name
             studentsToShow.sort((a, b) => {
                 const lastNameA = a.name.split(' ').pop();
@@ -546,9 +760,13 @@
             let html = '';
             students.forEach((student, index) => {
                 const displayName = getDisplayName(student.name);
-                const isChecked = checkIns[student.email] ? true : false;
+                const checkInData = checkIns[student.email];
+                const isChecked = checkInData ? true : false;
                 const checkedClass = isChecked ? 'checked' : '';
-                const checkinTime = checkIns[student.email] || '';
+                const checkinTime = checkInData ? checkInData.time : '';
+                const checkinMethod = checkInData ? checkInData.method : '';
+                const methodIcon = checkinMethod === 'online' ? '💻' : '🏫';
+                const methodText = checkinMethod === 'online' ? 'Online' : 'In-Person';
                 
                 html += `
                     <div class="student-card ${checkedClass}" onclick="toggleCheckIn('${student.email}', '${student.name.replace(/'/g, "\\'")}')">
@@ -557,7 +775,7 @@
                         </div>
                         <div class="student-info">
                             <div class="student-name">${displayName}</div>
-                            ${isChecked ? `<div class="checkin-time">✓ Checked in at ${checkinTime}</div>` : ''}
+                            ${isChecked ? `<div class="checkin-time">✓ ${methodIcon} ${methodText} at ${checkinTime}</div>` : ''}
                         </div>
                     </div>
                 `;
@@ -567,16 +785,58 @@
         }
 
         function toggleCheckIn(email, fullName) {
+            if (checkIns[email]) {
+                // Uncheck
+                if (confirm(`Uncheck ${fullName}?`)) {
+                    delete checkIns[email];
+                    saveCheckIns();
+                    filterStudents();
+                }
+            } else {
+                // Show attendance method selection
+                showAttendanceMethodModal(email, fullName);
+            }
+        }
+
+        function showAttendanceMethodModal(email, fullName) {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Check In: ${fullName}</h2>
+                        <span class="close" onclick="this.closest('.modal').remove()">&times;</span>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color: var(--grey-dark); margin-bottom: 20px;">
+                            How are you attending class today?
+                        </p>
+                        <div style="display: flex; gap: 15px; flex-direction: column;">
+                            <button class="btn btn-primary" onclick="completeCheckIn('${email}', '${fullName.replace(/'/g, "\\'")}', 'in-person')" style="padding: 20px; font-size: 18px;">
+                                🏫 In-Person
+                            </button>
+                            <button class="btn btn-secondary" onclick="completeCheckIn('${email}', '${fullName.replace(/'/g, "\\'")}', 'online')" style="padding: 20px; font-size: 18px;">
+                                💻 Online
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function completeCheckIn(email, fullName, method) {
             const now = new Date();
             const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             
-            if (checkIns[email]) {
-                // Uncheck
-                delete checkIns[email];
-            } else {
-                // Check in
-                checkIns[email] = timeString;
-            }
+            checkIns[email] = {
+                time: timeString,
+                method: method,
+                fullName: fullName
+            };
+            
+            // Remove modal
+            document.querySelectorAll('.modal').forEach(m => m.remove());
             
             // Save to localStorage
             saveCheckIns();
@@ -630,6 +890,13 @@
             
             let studentsToShow = [...realStudents];
             
+            // Filter by current tab first
+            if (currentTab === 'year1') {
+                studentsToShow = studentsToShow.filter(s => s.year === 1);
+            } else if (currentTab === 'year2') {
+                studentsToShow = studentsToShow.filter(s => s.year === 2);
+            }
+            
             // Filter by search
             if (searchTerm) {
                 studentsToShow = studentsToShow.filter(s => 
@@ -651,12 +918,20 @@
         }
 
         function checkAllVisible() {
+            if (!confirm('Check in all visible students as IN-PERSON?')) {
+                return;
+            }
+            
             const now = new Date();
             const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
             
             filteredStudents.forEach(student => {
                 if (!checkIns[student.email]) {
-                    checkIns[student.email] = timeString;
+                    checkIns[student.email] = {
+                        time: timeString,
+                        method: 'in-person',
+                        fullName: student.name
+                    };
                 }
             });
             
@@ -685,13 +960,15 @@
 
         function exportToCSV() {
             const today = new Date().toLocaleDateString();
-            const headers = ['Student Name', 'Display Name', 'Year', 'Email', 'Phone', 'Checked In', 'Check-In Time'];
+            const headers = ['Student Name', 'Display Name', 'Year', 'Email', 'Phone', 'Checked In', 'Check-In Time', 'Attendance Method'];
             const csvData = [headers];
             
             filteredStudents.forEach(student => {
                 const displayName = getDisplayName(student.name);
-                const isChecked = checkIns[student.email] ? 'Yes' : 'No';
-                const checkinTime = checkIns[student.email] || '';
+                const checkInData = checkIns[student.email];
+                const isChecked = checkInData ? 'Yes' : 'No';
+                const checkinTime = checkInData ? checkInData.time : '';
+                const checkinMethod = checkInData ? checkInData.method : '';
                 
                 csvData.push([
                     student.name,
@@ -700,7 +977,8 @@
                     student.email,
                     student.phone,
                     isChecked,
-                    checkinTime
+                    checkinTime,
+                    checkinMethod
                 ]);
             });
             
@@ -714,6 +992,97 @@
             window.URL.revokeObjectURL(url);
             
             alert('✅ Check-in data exported successfully!');
+        }
+
+        // Modal functions for adding new students
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').classList.add('active');
+            // Pre-select the current tab's year
+            const yearSelect = document.getElementById('newStudentYear');
+            if (currentTab === 'year1') {
+                yearSelect.value = '1';
+            } else if (currentTab === 'year2') {
+                yearSelect.value = '2';
+            }
+        }
+
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').classList.remove('active');
+            document.getElementById('addStudentForm').reset();
+        }
+
+        function addNewStudent(event) {
+            event.preventDefault();
+            
+            const firstName = document.getElementById('newFirstName').value.trim();
+            const lastName = document.getElementById('newLastName').value.trim();
+            const year = parseInt(document.getElementById('newStudentYear').value);
+            
+            if (!firstName || !lastName || !year) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Create full name
+            const fullName = `${firstName} ${lastName}`;
+            
+            // Create temporary email (will be updated later by admin)
+            const tempEmail = `temp_${firstName.toLowerCase()}_${lastName.toLowerCase()}_${Date.now()}@temporary.com`;
+            
+            // Create new student object
+            const newStudent = {
+                name: fullName,
+                email: tempEmail,
+                phone: '',
+                year: year,
+                isTemporary: true,
+                addedDate: new Date().toISOString()
+            };
+            
+            // Add to appropriate year array
+            if (year === 1) {
+                year1Students.push(newStudent);
+            } else {
+                year2Students.push(newStudent);
+            }
+            
+            // Update realStudents array
+            realStudents.push(newStudent);
+            
+            // Save to localStorage
+            localStorage.setItem('realStudents', JSON.stringify(realStudents));
+            
+            // Save temporary students separately for admin review
+            let tempStudents = JSON.parse(localStorage.getItem('temporaryStudents') || '[]');
+            tempStudents.push(newStudent);
+            localStorage.setItem('temporaryStudents', JSON.stringify(tempStudents));
+            
+            // Check them in immediately as in-person
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            checkIns[tempEmail] = {
+                time: timeString,
+                method: 'in-person',
+                fullName: fullName
+            };
+            saveCheckIns();
+            
+            // Close modal
+            closeAddStudentModal();
+            
+            // Reload students
+            loadStudents();
+            
+            // Show success message
+            alert(`✅ Welcome ${firstName}! You've been added and checked in.\n\nYour information will be reviewed by the administrator.`);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addStudentModal');
+            if (event.target === modal) {
+                closeAddStudentModal();
+            }
         }
     </script>
 </body>

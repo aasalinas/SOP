@@ -1152,25 +1152,23 @@
             const modal = document.getElementById('donationQRModal');
             const qrContainer = document.getElementById('donationQRCode');
             qrContainer.innerHTML = '';
-            
+
             // Set donation type
             document.getElementById('donationType').textContent = type === 'one-time' ? 'One-Time Donation' : 'Monthly Giving';
-            
-            // Generate donation link
-            const donationId = 'DON-' + Date.now();
-            const donationLink = `${window.location.origin}/donate?id=${donationId}&type=${type}`;
-            document.getElementById('donationLink').value = donationLink;
-            
-            // Generate QR code
-            new QRCode(qrContainer, {
-                text: donationLink,
-                width: 256,
-                height: 256,
-                colorDark: "#6B4423",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
+
+            // Use real ministry QR code image
+            const qrImage = document.createElement('img');
+            qrImage.src = 'donation-qr-code.png';
+            qrImage.alt = 'Donation QR Code';
+            qrImage.style.width = '256px';
+            qrImage.style.height = '256px';
+            qrImage.style.borderRadius = '10px';
+            qrContainer.appendChild(qrImage);
+
+            // Hide the payment link section since we're using a real QR code
+            const linkSection = document.getElementById('donationLink').parentElement;
+            linkSection.style.display = 'none';
+
             modal.style.display = 'flex';
         }
 

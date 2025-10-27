@@ -1503,6 +1503,19 @@
                     </div>
                     
                     <!-- Search and Filter Bar -->
+                    
+                    <!-- Year Selection Tabs -->
+                    <div style="background: var(--light); padding: 10px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px;">
+                        <button class="action-btn btn-info" id="allYearsBtn" onclick="switchYearView('all', this)" style="flex: 1;">
+                            📚 All Students
+                        </button>
+                        <button class="action-btn" id="year1Btn" onclick="switchYearView(1, this)" style="flex: 1; background: white; color: var(--primary); border: 2px solid var(--primary);">
+                            📖 Year 1 Students
+                        </button>
+                        <button class="action-btn" id="year2Btn" onclick="switchYearView(2, this)" style="flex: 1; background: white; color: var(--primary); border: 2px solid var(--primary);">
+                            📗 Year 2 Students
+                        </button>
+                    </div>
                     <div style="background: var(--light); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
                         <div class="grid-3">
                             <div class="form-group" style="margin-bottom: 0;">
@@ -1527,7 +1540,7 @@
                             </div>
                         </div>
                         <div style="margin-top: 10px; color: #666; font-size: 14px;">
-                            <span id="filterResults">Showing all 58 students</span>
+                            <span id="filterResults">Showing all 70 students</span>
                         </div>
                     </div>
                     
@@ -1782,6 +1795,64 @@
                     <!-- Registration list would go here -->
                 </div>
 
+
+                <!-- Payment Details Content -->
+                <div id="payments-content" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>💳 Payment Details Tracking</h2>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="action-btn btn-success" onclick="exportPaymentDetailsCSV()">📥 Export Payment Details</button>
+                            <button class="action-btn btn-info" onclick="refreshPaymentDetails()">🔄 Refresh</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="margin-bottom: 30px; background: #e3f2fd; border-left: 4px solid var(--primary);">
+                        <h4>📋 Payment Tracking Information</h4>
+                        <p>• Track acceptance letters, registration fees, and unit payments</p>
+                        <p>• Click on any cell to update payment status</p>
+                        <p>• <strong>Y</strong> = Paid/Completed | <strong>COMP</strong> = Complimentary/Scholarship | <strong>PP</strong> = Payment Plan</p>
+                        <p>• Filter by year to view Year 1 or Year 2 payment details</p>
+                    </div>
+                    
+                    <!-- Year Filter for Payment Details -->
+                    <div style="background: var(--light); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Filter by Year</label>
+                            <select id="paymentYearFilter" onchange="filterPaymentDetails()" style="width: 300px; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                                <option value="all">All Years</option>
+                                <option value="1">Year 1 Only</option>
+                                <option value="2">Year 2 Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Details Table -->
+                    <div style="overflow-x: auto;">
+                        <table class="student-table" id="paymentDetailsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Year</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Acceptance Sent</th>
+                                    <th>Reg Fee</th>
+                                    <th>Unit 1</th>
+                                    <th>Unit 2</th>
+                                    <th>Unit 3</th>
+                                    <th>Unit 4</th>
+                                    <th>Unit 5</th>
+                                    <th>Paid in Full</th>
+                                    <th>Active</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentDetailsBody">
+                                <!-- Payment details will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Workflows Content -->
                 <div id="workflows-content" style="display: none;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -1929,13 +2000,7 @@
                             <div class="timeline-content">
                                 <strong>Scholarship Approved</strong> - Emma Wilson received 50% scholarship ($125)
                             </div>
-                        </div>
-                        <div class="timeline-item">
-                            <div class="timeline-date">Yesterday, 10:00 AM</div>
-                            <div class="timeline-content">
-                                <strong>Donation Received</strong> - Anonymous donor contributed $500
-                            </div>
-                        </div>
+=======
                     </div>
                 </div>
 
@@ -2722,67 +2787,93 @@ Available merge fields:
 
         // Generate 58 realistic students (35 Year 1, 23 Year 2)
         const allStudents = [
-            // Year 1 Students (35 students) - $250 per semester
-            { name: 'Emma Johnson', year: 1, email: 'emma.j@email.com', phone: '(555) 101-2001', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Liam Williams', year: 1, email: 'liam.w@email.com', phone: '(555) 101-2002', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Olivia Brown', year: 1, email: 'olivia.b@email.com', phone: '(555) 101-2003', status: 'PENDING', balance: 125, attendance: 95 },
-            { name: 'Noah Davis', year: 1, email: 'noah.d@email.com', phone: '(555) 101-2004', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Ava Miller', year: 1, email: 'ava.m@email.com', phone: '(555) 101-2005', status: 'PAID', balance: 0, attendance: 97 },
-            { name: 'Elijah Wilson', year: 1, email: 'elijah.w@email.com', phone: '(555) 101-2006', status: 'PENDING', balance: 250, attendance: 92 },
-            { name: 'Sophia Moore', year: 1, email: 'sophia.m@email.com', phone: '(555) 101-2007', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'James Taylor', year: 1, email: 'james.t@email.com', phone: '(555) 101-2008', status: 'PAID', balance: 0, attendance: 96 },
-            { name: 'Isabella Anderson', year: 1, email: 'isabella.a@email.com', phone: '(555) 101-2009', status: 'PAID', balance: 0, attendance: 99 },
-            { name: 'Benjamin Thomas', year: 1, email: 'benjamin.t@email.com', phone: '(555) 101-2010', status: 'PENDING', balance: 125, attendance: 94 },
-            { name: 'Mia Jackson', year: 1, email: 'mia.j@email.com', phone: '(555) 101-2011', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Lucas White', year: 1, email: 'lucas.w@email.com', phone: '(555) 101-2012', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Charlotte Harris', year: 1, email: 'charlotte.h@email.com', phone: '(555) 101-2013', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Mason Martin', year: 1, email: 'mason.m@email.com', phone: '(555) 101-2014', status: 'PAID', balance: 0, attendance: 97 },
-            { name: 'Amelia Thompson', year: 1, email: 'amelia.t@email.com', phone: '(555) 101-2015', status: 'PENDING', balance: 250, attendance: 89 },
-            { name: 'Ethan Garcia', year: 1, email: 'ethan.g@email.com', phone: '(555) 101-2016', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Harper Martinez', year: 1, email: 'harper.m@email.com', phone: '(555) 101-2017', status: 'PAID', balance: 0, attendance: 95 },
-            { name: 'Alexander Robinson', year: 1, email: 'alex.r@email.com', phone: '(555) 101-2018', status: 'PAID', balance: 0, attendance: 99 },
-            { name: 'Evelyn Clark', year: 1, email: 'evelyn.c@email.com', phone: '(555) 101-2019', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Daniel Rodriguez', year: 1, email: 'daniel.r@email.com', phone: '(555) 101-2020', status: 'PENDING', balance: 125, attendance: 93 },
-            { name: 'Abigail Lewis', year: 1, email: 'abigail.l@email.com', phone: '(555) 101-2021', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Michael Lee', year: 1, email: 'michael.l@email.com', phone: '(555) 101-2022', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Emily Walker', year: 1, email: 'emily.w@email.com', phone: '(555) 101-2023', status: 'PAID', balance: 0, attendance: 96 },
-            { name: 'Matthew Hall', year: 1, email: 'matthew.h@email.com', phone: '(555) 101-2024', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Elizabeth Allen', year: 1, email: 'elizabeth.a@email.com', phone: '(555) 101-2025', status: 'PENDING', balance: 250, attendance: 88 },
-            { name: 'Joseph Young', year: 1, email: 'joseph.y@email.com', phone: '(555) 101-2026', status: 'PAID', balance: 0, attendance: 99 },
-            { name: 'Sofia Hernandez', year: 1, email: 'sofia.h@email.com', phone: '(555) 101-2027', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'David King', year: 1, email: 'david.k@email.com', phone: '(555) 101-2028', status: 'PAID', balance: 0, attendance: 97 },
-            { name: 'Avery Wright', year: 1, email: 'avery.w@email.com', phone: '(555) 101-2029', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Samuel Lopez', year: 1, email: 'samuel.l@email.com', phone: '(555) 101-2030', status: 'PAID', balance: 0, attendance: 95 },
-            { name: 'Ella Hill', year: 1, email: 'ella.h@email.com', phone: '(555) 101-2031', status: 'PENDING', balance: 125, attendance: 91 },
-            { name: 'Jackson Scott', year: 1, email: 'jackson.s@email.com', phone: '(555) 101-2032', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Scarlett Green', year: 1, email: 'scarlett.g@email.com', phone: '(555) 101-2033', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Sebastian Adams', year: 1, email: 'sebastian.a@email.com', phone: '(555) 101-2034', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Victoria Baker', year: 1, email: 'victoria.b@email.com', phone: '(555) 101-2035', status: 'PAID', balance: 0, attendance: 99 },
+// Year 1 Students (49 students) - $250 per semester - REAL DATA
+            { name: "Alexa (Lexie) Taylor", year: 1, email: "alexact9@yahoo.com", phone: "904-607-7768", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Amanda Mendez", year: 1, email: "a.mendez0509@gmail.com", phone: "602-618-7724", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Amber Diaz", year: 1, email: "Ad7298@hotmail.com", phone: "623-628-5461", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Amy Gaertner", year: 1, email: "amgaertner1@gmail.com", phone: "", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Angelica Miller", year: 1, email: "Angelicamariemiller@gmail.com", phone: "623-715-6588", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Angelo Garay", year: 1, email: "AGaray4@gmail.com", phone: "602-620-8899", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Annette Martinez", year: 1, email: "agmartinez1102@gmail.com", phone: "602-692-4670", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Ashleyann Perez", year: 1, email: "aanvperez@gmail.com", phone: "214-241-3219", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Carissa Josefowicz", year: 1, email: "takarachazz@yahoo.com", phone: "480-526-0650", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Cassi (Cassandra) Igo", year: 1, email: "cass.igo4@gmail.com", phone: "307-359-3172", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Chelsey Sands", year: 1, email: "chelsey_sands@yahoo.com", phone: "520-954-0304", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Christina Mendibles", year: 1, email: "tina.mendibles91@gmail.com", phone: "623-260-8545", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Chyna Coleman", year: 1, email: "chynacoleman08@gmail.com", phone: "602-862-8867", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Crystal Manley", year: 1, email: "manleycrystal9@gmail.com", phone: "602-803-8132", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Daniella Vega", year: 1, email: "daniellavega777@gmail.com", phone: "714-309-0786", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Danitza Angulo", year: 1, email: "danitzasiqueiros7@gmail.com", phone: "520-244-5449", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Danyelle White", year: 1, email: "danyellemorgan37@gmail.com", phone: "602-819-6608", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Davion Green", year: 1, email: "daviongreen0502@gmail.com", phone: "", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Deborah Dee", year: 1, email: "dee_deborah@hotmail.com", phone: "602-517-1578", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Easton Reigle", year: 1, email: "eastonkimball.cutco@gmail.com", phone: "602-882-5139", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Elijah Aguiling-Hinton", year: 1, email: "elijah99.0212@gmail.com", phone: "480-721-6824", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Ethan Wapniarski", year: 1, email: "ewapniarski@yahoo.com", phone: "971-272-5575", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Jaime Valdez", year: 1, email: "raider8418@yahoo.com", phone: "480-310-7103", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Jassel Sanchez", year: 1, email: "jasselpn@gmail.com", phone: "520-244-7416", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Jeanne Williams", year: 1, email: "wjeanne72@yahoo.com", phone: "509-828-9930", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Jen Grotte", year: 1, email: "jengrotte@outlook.com", phone: "701-770-4202", status: "COMP", balance: 0, attendance: 0 },
+            { name: "Jenna Foglesong", year: 1, email: "Juanvaldanyer28@gmail.com", phone: "602-740-1772", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Joanna Aguilar", year: 1, email: "joannaa10028@gmail.com", phone: "480-469-6693", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Joshua Smolenski", year: 1, email: "alaskanthunder@gmail.com", phone: "970-507-0901", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Kristine Monaghan", year: 1, email: "kristinejmo@gmail.com", phone: "", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Leslie Favor", year: 1, email: "leslieafavor@outlook.com", phone: "480-770-9402", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Lolita Owen", year: 1, email: "oummiss1@gmail.com", phone: "520-612-6993", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Maria Giles", year: 1, email: "giles2026@gmail.com", phone: "480-886-7638", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Maria Ruiz", year: 1, email: "mariasbills2017@gmail.com", phone: "623-986-6285", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Marie Hinton", year: 1, email: "Maiah31@yahoo.com", phone: "480-869-2616", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Martha Gonzalez", year: 1, email: "marthaveryblessedone@gmail.com", phone: "", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Melissa Hernandez", year: 1, email: "Honeeb26@gmail.com", phone: "602-446-3373", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Monique Quiñonez", year: 1, email: "monique.quinon@yahoo.com", phone: "520-548-0717", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Natasha Sims", year: 1, email: "natasha.r.sims@gmail.com", phone: "762-257-0555", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Nora Colindres", year: 1, email: "Colindres.nora@gmail.com", phone: "520-301-5441", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Omolade Ogunniyi", year: 1, email: "Omoladeprm@outlook.com", phone: "928-232-9075", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Robin Lemieux", year: 1, email: "robin.lemieux21@gmail.com", phone: "602-785-2653", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Ryleigh Wolfington", year: 1, email: "rwolfington95@gmail.com", phone: "425-263-0708", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Sarahjean Perez", year: 1, email: "Cviisj@gmail.com", phone: "469-862-7816", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Sherinda Little", year: 1, email: "sherindal@gmail.com", phone: "480-720-1144", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Tacia Scott", year: 1, email: "tacia.scott@gmail.com", phone: "602-550-5048", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Takara Wade", year: 1, email: "tw.day2day@gmail.com", phone: "480-652-7211", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Tracy Porterfield", year: 1, email: "Tporterfield07@gmail.com", phone: "312-998-8259", status: "PENDING", balance: 250, attendance: 0 },
+            { name: "Victoria Hall", year: 1, email: "victoriahall34@gmail.com", phone: "773-964-4251", status: "PENDING", balance: 250, attendance: 0 },
 
-            // Year 2 Students (23 students) - $280 per semester
-            { name: 'Grace Nelson', year: 2, email: 'grace.n@email.com', phone: '(555) 201-3001', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Henry Carter', year: 2, email: 'henry.c@email.com', phone: '(555) 201-3002', status: 'PENDING', balance: 140, attendance: 96 },
-            { name: 'Chloe Mitchell', year: 2, email: 'chloe.m@email.com', phone: '(555) 201-3003', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Owen Perez', year: 2, email: 'owen.p@email.com', phone: '(555) 201-3004', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Lily Roberts', year: 2, email: 'lily.r@email.com', phone: '(555) 201-3005', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Jack Turner', year: 2, email: 'jack.t@email.com', phone: '(555) 201-3006', status: 'PENDING', balance: 280, attendance: 90 },
-            { name: 'Zoey Phillips', year: 2, email: 'zoey.p@email.com', phone: '(555) 201-3007', status: 'PAID', balance: 0, attendance: 99 },
-            { name: 'Luke Campbell', year: 2, email: 'luke.c@email.com', phone: '(555) 201-3008', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Nora Parker', year: 2, email: 'nora.p@email.com', phone: '(555) 201-3009', status: 'PAID', balance: 0, attendance: 97 },
-            { name: 'Ryan Evans', year: 2, email: 'ryan.e@email.com', phone: '(555) 201-3010', status: 'PENDING', balance: 140, attendance: 94 },
-            { name: 'Hannah Edwards', year: 2, email: 'hannah.e@email.com', phone: '(555) 201-3011', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Nathan Collins', year: 2, email: 'nathan.c@email.com', phone: '(555) 201-3012', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Layla Stewart', year: 2, email: 'layla.s@email.com', phone: '(555) 201-3013', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Isaac Sanchez', year: 2, email: 'isaac.s@email.com', phone: '(555) 201-3014', status: 'PAID', balance: 0, attendance: 99 },
-            { name: 'Zoe Morris', year: 2, email: 'zoe.m@email.com', phone: '(555) 201-3015', status: 'PENDING', balance: 280, attendance: 87 },
-            { name: 'Gabriel Rogers', year: 2, email: 'gabriel.r@email.com', phone: '(555) 201-3016', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Penelope Reed', year: 2, email: 'penelope.r@email.com', phone: '(555) 201-3017', status: 'PAID', balance: 0, attendance: 96 },
-            { name: 'Julian Cook', year: 2, email: 'julian.c@email.com', phone: '(555) 201-3018', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Aria Morgan', year: 2, email: 'aria.m@email.com', phone: '(555) 201-3019', status: 'PAID', balance: 0, attendance: 98 },
-            { name: 'Wyatt Bell', year: 2, email: 'wyatt.b@email.com', phone: '(555) 201-3020', status: 'PENDING', balance: 140, attendance: 92 },
-            { name: 'Aurora Murphy', year: 2, email: 'aurora.m@email.com', phone: '(555) 201-3021', status: 'PAID', balance: 0, attendance: 100 },
-            { name: 'Leo Bailey', year: 2, email: 'leo.b@email.com', phone: '(555) 201-3022', status: 'PAID', balance: 0, attendance: 99 },
-            { name: 'Hazel Rivera', year: 2, email: 'hazel.r@email.com', phone: '(555) 201-3023', status: 'PAID', balance: 0, attendance: 100 }
+            // Year 2 Students (35 students) - $280 per semester - REAL DATA
+            { name: 'Paris Ulvog', year: 2, email: 'ulvog.paris@gmail.com', phone: '623-387-5511', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Caprisha Williams', year: 2, email: 'caprisha81@gmail.com', phone: '602-550-7701', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Neftali Rivera', year: 2, email: 'jeyandtal@yahoo.com', phone: '203-824-7669', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Jessica Rivera', year: 2, email: 'jeyjey2282@yahoo.com', phone: '203-506-1167', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Carmen Coleman', year: 2, email: 'carmenlcoleman2016@gmail.com', phone: '480-840-4860', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Isis Bennifield', year: 2, email: 'isis.bennifield@gmail.com', phone: '602-502-1881', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Jaydan Herrera', year: 2, email: 'jaydanpopo@gmail.com', phone: '602-558-2730', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Erika Lambert', year: 2, email: 'erikatownsend.dpt@gmail.com', phone: '', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: "Ty'Ran Lambert", year: 2, email: 'tyranlambert@gmail.com', phone: '317-324-6595', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Ana Maria Lara', year: 2, email: 'Analara4949@gmail.com', phone: '602-793-4949', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Marissa Castillo', year: 2, email: 'm.ambearxo@gmail.com', phone: '480-259-8479', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Onjalai Brown', year: 2, email: 'onjalaiis@gmail.com', phone: '503-935-3812', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Shauna Ash', year: 2, email: 'shaunaash01@gmail.com', phone: '602-550-9865', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'IKA Sagayo', year: 2, email: 'csagayo@gmail.com', phone: '602-810-3182', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Daniel Ash', year: 2, email: 'Dan911iel@gmail.com', phone: '602-550-9927', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Cassandra Davis', year: 2, email: 'cassandraortiz07@gmail.com', phone: '815-409-1948', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Andre Beverly', year: 2, email: 'andre.d.beverly@gmail.com', phone: '463-222-1333', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: "Cne' Townsel", year: 2, email: 'cnetownsel@gmail.com', phone: '614-702-1166', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Katalina Patino', year: 2, email: 'katalinapatino@yahoo.com', phone: '209-409-2858', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Karizma Malone', year: 2, email: 'malonekarizma1@gmail.com', phone: '480-430-1693', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Elizabeth Diaz', year: 2, email: 'd_elizabeth35@yahoo.com', phone: '480-635-6157', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: '', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Kenyan Keegan', year: 2, email: 'keeganlive@live.com', phone: '602-639-3968', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Martha Gonzalez', year: 2, email: 'marthaveryblessedone@gmail.com', phone: '', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Mambi Ashu', year: 2, email: 'Laurettaashu@gmail.com', phone: '678-895-4009', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: '', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Erica Cardenas', year: 2, email: 'erica@cardenasmarketing.com', phone: '602-451-8719', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Azsaunna Bryant', year: 2, email: 'azsaunna@gmail.com', phone: '229-603-9669', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Cynthia Muse', year: 2, email: 'cynthiamuse89@gmail.com', phone: '602-527-0990', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Bernadette Ramos', year: 2, email: 'bernadetteramos@outlook.com', phone: '602-677-9136', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Jennifer Atudoroae', year: 2, email: 'jenniferatud@gmail.com', phone: '602-459-0881', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Gihan Viani', year: 2, email: 'Vianigihan@gmail.com', phone: '404-632-2097', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: 'PP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Sagayo Michelle', year: 2, email: 'mmsagayo@gmail.com', phone: '480-277-6302', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Jen Grotte', year: 2, email: 'jengrotte@outlook.com', phone: '701-770-4202', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: '', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Adali Payan', year: 2, email: 'Adaligabriela1024@gmail.com', phone: '602-391-8838', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Demian van der Nat', year: 2, email: 'Demian_vdnat@hotmail.com', phone: '623-275-1141', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+            { name: 'Garner Denise', year: 2, email: 'Drgarner84@yahoo.com', phone: '760-519-1588', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: 'PP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' }
         ];
 
         // Landing Page Functions
@@ -2846,7 +2937,7 @@ Available merge fields:
                     }
                 }
                 
-                // Default demo account
+                // Default admin account
                 if (email === 'admin@schoolofpurpose.org') {
                     const defaultMinistry = {
                         name: 'School of Purpose',
@@ -2860,7 +2951,7 @@ Available merge fields:
                     showDashboard(defaultMinistry);
                     closeModal();
                 } else {
-                    alert('Invalid credentials. Try admin@schoolofpurpose.org with any password for demo.');
+                    alert('Invalid credentials. Please check your email and password.');
                 }
             }
         }
@@ -3095,6 +3186,8 @@ Available merge fields:
                     } else if (tabName === 'schedule') {
                         loadScheduleList();
                     } else if (tabName === 'registrations') {
+                    } else if (tabName === 'payments') {
+                        loadPaymentDetails();
                         showNewRegistrations();
                     }
                 }
@@ -3681,6 +3774,28 @@ Available merge fields:
             alert('Detailed scholarship application view would open here.');
         }
 
+        function makeDonation(type) {
+            // Show donation QR code modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px; text-align: center;">
+                    <div class="modal-header">
+                        <h3 class="modal-title">💝 ${type === 'one-time' ? 'One-Time Donation' : 'Monthly Giving'}</h3>
+                        <button class="close-modal" onclick="this.closest('.modal').remove()">×</button>
+                    </div>
+                    <p style="margin-bottom: 20px; color: var(--grey-dark);">Scan the QR code below to make your donation</p>
+                    <div style="display: inline-block; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+                        <img src="donation-qr-code.png" alt="Donation QR Code" style="width: 256px; height: 256px; border-radius: 10px;">
+                    </div>
+                    <p style="margin-top: 20px; color: var(--grey-dark); font-size: 14px;">Thank you for your generous support!</p>
+                    <button class="action-btn" onclick="this.closest('.modal').remove()" style="margin-top: 20px; background: var(--grey-dark);">Close</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
         function showDonations() {
             document.getElementById('donationsModal').classList.add('active');
         }
@@ -3735,6 +3850,162 @@ Available merge fields:
             const csvContent = csvData.map(row => row.join(',')).join('\n');
             const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
+
+        // ===== YEAR VIEW SWITCHING FUNCTIONS =====
+        
+        let currentYearView = 'all';
+        
+        function switchYearView(year, element) {
+            currentYearView = year;
+            
+            // Update button styles
+            document.getElementById('allYearsBtn').style.background = '';
+            document.getElementById('allYearsBtn').style.color = '';
+            document.getElementById('allYearsBtn').style.border = '';
+            document.getElementById('year1Btn').style.background = 'white';
+            document.getElementById('year1Btn').style.color = 'var(--primary)';
+            document.getElementById('year1Btn').style.border = '2px solid var(--primary)';
+            document.getElementById('year2Btn').style.background = 'white';
+            document.getElementById('year2Btn').style.color = 'var(--primary)';
+            document.getElementById('year2Btn').style.border = '2px solid var(--primary)';
+            
+            // Highlight selected button
+            element.style.background = 'var(--primary)';
+            element.style.color = 'white';
+            element.style.border = '2px solid var(--primary)';
+            
+            // Update year filter dropdown to match
+            document.getElementById('yearFilter').value = year === 'all' ? 'all' : year.toString();
+            
+            // Reload table with filtered students
+            filterStudents();
+        }
+        
+        // ===== PAYMENT DETAILS FUNCTIONS =====
+        
+        function loadPaymentDetails() {
+            const yearFilter = document.getElementById('paymentYearFilter').value;
+            const tbody = document.getElementById('paymentDetailsBody');
+            
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            let studentsToShow = allStudents;
+            if (yearFilter !== 'all') {
+                studentsToShow = allStudents.filter(s => s.year === parseInt(yearFilter));
+            }
+            
+            studentsToShow.forEach((student, index) => {
+                const actualIndex = allStudents.indexOf(student);
+                const row = document.createElement('tr');
+                
+                // Helper function to create editable cell
+                const createEditableCell = (value, field) => {
+                    const displayValue = value || '-';
+                    const cellClass = value === 'Y' ? 'status-paid' : value === 'COMP' ? 'scholarship-badge' : value === 'PP' ? 'status-pending' : '';
+                    return `<td onclick="editPaymentField(${actualIndex}, '${field}')" style="cursor: pointer; ${value ? 'font-weight: 600;' : ''}" title="Click to edit">
+                        ${value ? `<span class="status-badge ${cellClass}">${displayValue}</span>` : displayValue}
+                    </td>`;
+                };
+                
+                row.innerHTML = `
+                    <td><strong>${student.name}</strong></td>
+                    <td>Year ${student.year}</td>
+                    <td>${student.email}</td>
+                    <td>${student.phone || '-'}</td>
+                    ${createEditableCell(student.acceptanceSent, 'acceptanceSent')}
+                    ${createEditableCell(student.regFee, 'regFee')}
+                    ${createEditableCell(student.unit1, 'unit1')}
+                    ${createEditableCell(student.unit2, 'unit2')}
+                    ${createEditableCell(student.unit3, 'unit3')}
+                    ${createEditableCell(student.unit4, 'unit4')}
+                    ${createEditableCell(student.unit5, 'unit5')}
+                    ${createEditableCell(student.paidInFull, 'paidInFull')}
+                    ${createEditableCell(student.active, 'active')}
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        function filterPaymentDetails() {
+            loadPaymentDetails();
+        }
+        
+        function refreshPaymentDetails() {
+            loadPaymentDetails();
+            alert('✅ Payment details refreshed!');
+        }
+        
+        function editPaymentField(studentIndex, field) {
+            const student = allStudents[studentIndex];
+            const currentValue = student[field] || '';
+            
+            const fieldNames = {
+                'acceptanceSent': 'Acceptance Sent',
+                'regFee': 'Registration Fee',
+                'unit1': 'Unit 1 Payment',
+                'unit2': 'Unit 2 Payment',
+                'unit3': 'Unit 3 Payment',
+                'unit4': 'Unit 4 Payment',
+                'unit5': 'Unit 5 Payment',
+                'paidInFull': 'Paid in Full',
+                'active': 'Active Status'
+            };
+            
+            const newValue = prompt(
+                `Update ${fieldNames[field]} for ${student.name}\n\nCurrent value: ${currentValue || '(empty)'}\n\nEnter new value:\n• Y = Yes/Paid\n• COMP = Complimentary\n• PP = Payment Plan\n• Leave empty to clear`,
+                currentValue
+            );
+            
+            if (newValue !== null) {
+                student[field] = newValue.trim().toUpperCase();
+                loadPaymentDetails();
+                console.log(`Updated ${student.name} - ${field}: ${student[field]}`);
+            }
+        }
+        
+        function exportPaymentDetailsCSV() {
+            const headers = ['Name', 'Year', 'Email', 'Phone', 'Acceptance Sent', 'Reg Fee', 'Unit 1', 'Unit 2', 'Unit 3', 'Unit 4', 'Unit 5', 'Paid in Full', 'Active'];
+            const csvData = [headers];
+            
+            const yearFilter = document.getElementById('paymentYearFilter').value;
+            let studentsToExport = allStudents;
+            if (yearFilter !== 'all') {
+                studentsToExport = allStudents.filter(s => s.year === parseInt(yearFilter));
+            }
+            
+            studentsToExport.forEach(student => {
+                csvData.push([
+                    student.name,
+                    `Year ${student.year}`,
+                    student.email,
+                    student.phone || '',
+                    student.acceptanceSent || '',
+                    student.regFee || '',
+                    student.unit1 || '',
+                    student.unit2 || '',
+                    student.unit3 || '',
+                    student.unit4 || '',
+                    student.unit5 || '',
+                    student.paidInFull || '',
+                    student.active || ''
+                ]);
+            });
+            
+            const csvContent = csvData.map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `payment_details_${yearFilter}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('✅ Payment details exported successfully!');
+        }
+
             const link = document.createElement('a');
             link.href = url;
             link.download = `students_${new Date().toISOString().split('T')[0]}.csv`;
@@ -4575,7 +4846,7 @@ Available merge fields:
             
             // Log that script loaded successfully
             console.log('✅ School of Purpose - All scripts loaded successfully!');
-            console.log('📝 Demo Login: admin@schoolofpurpose.org + any password');
+            console.log('📝 Login: admin@schoolofpurpose.org');
         }
     </script>
     

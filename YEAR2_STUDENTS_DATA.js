@@ -1,0 +1,46 @@
+// Year 2 Students Data - Real Students (35 total)
+// To be integrated into sopministry.html
+
+const year2Students = [
+    { name: 'Paris Ulvog', year: 2, email: 'ulvog.paris@gmail.com', phone: '623-387-5511', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Caprisha Williams', year: 2, email: 'caprisha81@gmail.com', phone: '602-550-7701', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Neftali Rivera', year: 2, email: 'jeyandtal@yahoo.com', phone: '203-824-7669', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Jessica Rivera', year: 2, email: 'jeyjey2282@yahoo.com', phone: '203-506-1167', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Carmen Coleman', year: 2, email: 'carmenlcoleman2016@gmail.com', phone: '480-840-4860', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Isis Bennifield', year: 2, email: 'isis.bennifield@gmail.com', phone: '602-502-1881', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Jaydan Herrera', year: 2, email: 'jaydanpopo@gmail.com', phone: '602-558-2730', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Erika Lambert', year: 2, email: 'erikatownsend.dpt@gmail.com', phone: '', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: "Ty'Ran Lambert", year: 2, email: 'tyranlambert@gmail.com', phone: '317-324-6595', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Ana Maria Lara', year: 2, email: 'Analara4949@gmail.com', phone: '602-793-4949', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Marissa Castillo', year: 2, email: 'm.ambearxo@gmail.com', phone: '480-259-8479', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Onjalai Brown', year: 2, email: 'onjalaiis@gmail.com', phone: '503-935-3812', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Shauna Ash', year: 2, email: 'shaunaash01@gmail.com', phone: '602-550-9865', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'IKA Sagayo', year: 2, email: 'csagayo@gmail.com', phone: '602-810-3182', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Daniel Ash', year: 2, email: 'Dan911iel@gmail.com', phone: '602-550-9927', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Cassandra Davis', year: 2, email: 'cassandraortiz07@gmail.com', phone: '815-409-1948', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Andre Beverly', year: 2, email: 'andre.d.beverly@gmail.com', phone: '463-222-1333', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: "Cne' Townsel", year: 2, email: 'cnetownsel@gmail.com', phone: '614-702-1166', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Katalina Patino', year: 2, email: 'katalinapatino@yahoo.com', phone: '209-409-2858', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Karizma Malone', year: 2, email: 'malonekarizma1@gmail.com', phone: '480-430-1693', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Elizabeth Diaz', year: 2, email: 'd_elizabeth35@yahoo.com', phone: '480-635-6157', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: '', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Kenyan Keegan', year: 2, email: 'keeganlive@live.com', phone: '602-639-3968', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Martha Gonzalez', year: 2, email: 'marthaveryblessedone@gmail.com', phone: '', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Mambi Ashu', year: 2, email: 'Laurettaashu@gmail.com', phone: '678-895-4009', status: 'PAID', balance: 0, attendance: 0, acceptanceSent: '', regFee: 'Y', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Erica Cardenas', year: 2, email: 'erica@cardenasmarketing.com', phone: '602-451-8719', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Azsaunna Bryant', year: 2, email: 'azsaunna@gmail.com', phone: '229-603-9669', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Cynthia Muse', year: 2, email: 'cynthiamuse89@gmail.com', phone: '602-527-0990', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Bernadette Ramos', year: 2, email: 'bernadetteramos@outlook.com', phone: '602-677-9136', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Jennifer Atudoroae', year: 2, email: 'jenniferatud@gmail.com', phone: '602-459-0881', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Gihan Viani', year: 2, email: 'Vianigihan@gmail.com', phone: '404-632-2097', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: 'PP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Sagayo Michelle', year: 2, email: 'mmsagayo@gmail.com', phone: '480-277-6302', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Jen Grotte', year: 2, email: 'jengrotte@outlook.com', phone: '701-770-4202', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: '', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Adali Payan', year: 2, email: 'Adaligabriela1024@gmail.com', phone: '602-391-8838', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: '', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Demian van der Nat', year: 2, email: 'Demian_vdnat@hotmail.com', phone: '623-275-1141', status: 'COMP', balance: 0, attendance: 0, acceptanceSent: 'Y', regFee: 'COMP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' },
+    { name: 'Garner Denise', year: 2, email: 'Drgarner84@yahoo.com', phone: '760-519-1588', status: 'PENDING', balance: 280, attendance: 0, acceptanceSent: 'Y', regFee: 'PP', unit1: '', unit2: '', unit3: '', unit4: '', unit5: '', paidInFull: '', active: '' }
+];
+
+// Notes:
+// - COMP = Complimentary/Scholarship (no payment required)
+// - PP = Payment Plan
+// - Y = Yes/Completed
+// - Empty fields = Not yet completed/paid
