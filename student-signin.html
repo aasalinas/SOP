@@ -104,6 +104,71 @@
             font-size: 16px;
         }
 
+        .guest-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid var(--grey);
+        }
+
+        .guest-mode-toggle.active {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #ffc107;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .guest-mode-label {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -496,6 +561,13 @@
             <div class="date-display" id="currentDate"></div>
         </div>
         <div class="header-right">
+            <div class="guest-mode-toggle" id="guestModeToggle">
+                <span class="guest-mode-label">🎉 Guest Night</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="guestModeCheckbox" onchange="toggleGuestMode()">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
             <div class="stats-badge" id="checkinStats">0 / 0 Checked In</div>
             <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
             <button class="btn btn-secondary" onclick="exportToCSV()">📥 Export</button>
@@ -507,6 +579,7 @@
         <div class="tabs no-print">
             <button class="tab active" onclick="switchTab('year1')">Year 1 Students</button>
             <button class="tab" onclick="switchTab('year2')">Year 2 Students</button>
+            <button class="tab" id="guestsTab" onclick="switchTab('guests')" style="display: none;">👥 Guests</button>
         </div>
 
         <div class="search-bar no-print">
@@ -546,6 +619,12 @@
                     Don't see your name on the list? Add yourself here and we'll update our records.
                 </p>
                 <form id="addStudentForm" onsubmit="addNewStudent(event)">
+                    <div class="form-group" id="guestTypeGroup" style="display: none;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                            <input type="checkbox" id="isGuestCheckbox" onchange="toggleGuestFields()" style="width: 20px; height: 20px;">
+                            <span>I'm bringing a guest</span>
+                        </label>
+                    </div>
                     <div class="form-group">
                         <label for="newFirstName">First Name *</label>
                         <input type="text" id="newFirstName" class="form-input" required placeholder="Enter your first name">
@@ -554,12 +633,18 @@
                         <label for="newLastName">Last Name *</label>
                         <input type="text" id="newLastName" class="form-input" required placeholder="Enter your last name">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" id="yearGroup">
                         <label for="newStudentYear">Year *</label>
                         <select id="newStudentYear" class="form-input" required>
                             <option value="">Select your year</option>
                             <option value="1">Year 1</option>
                             <option value="2">Year 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="hostGroup" style="display: none;">
+                        <label for="guestHost">Who brought you? *</label>
+                        <select id="guestHost" class="form-input">
+                            <option value="">Select the student who brought you</option>
                         </select>
                     </div>
                     <div class="modal-footer">
@@ -578,7 +663,7 @@
             { name: "Alexa (Lexie) Taylor", email: "alexact9@yahoo.com", phone: "9046077768", year: 1 },
             { name: "Amanda Mendez", email: "a.mendez0509@gmail.com", phone: "602-618-7724", year: 1 },
             { name: "Amber Diaz", email: "Ad7298@hotmail.com", phone: "6236285461", year: 1 },
-            { name: "Amy Gaertner", email: "amgaertner1@gmail.com", phone: "", year: 1 },
+            { name: "Amy Gaertner", email: "amygaertner1@gmail.com", phone: "", year: 1 },
             { name: "Angelica Miller", email: "Angelicamariemiller@gmail.com", phone: "6237156588", year: 1 },
             { name: "Angelo Garay", email: "AGaray4@gmail.com", phone: "6026208899", year: 1 },
             { name: "Annette Martinez", email: "agmartinez1102@gmail.com", phone: "6026924670", year: 1 },
@@ -624,44 +709,66 @@
             { name: "Takara Wade", email: "tw.day2day@gmail.com", phone: "4806527211", year: 1 },
             { name: "Tracy Porterfield", email: "Tporterfield07@gmail.com", phone: "3129988259", year: 1 },
             { name: "Victoria Hall", email: "victoriahall34@gmail.com", phone: "7739644251", year: 1 },
+            { name: "Marlene Lomeli Nelson", email: "mblnelson@outlook.com", phone: "602-790-2194", year: 1 },
+            { name: "Latisha Trull", email: "latisha2p@gmail.com", phone: "6022149738", year: 1 },
+            { name: "Jess", email: "Sayjesstothehouse@gmail.com", phone: "4809749231", year: 1 },
+            { name: "Shayla N", email: "nshayla74@yahoo.com", phone: "6022101139", year: 1 },
+            { name: "Amara Hicks", email: "Amarahicks@gmail.com", phone: "602-332-2056", year: 1 },
+            { name: "Andrea Liliana Yates-Castillo", email: "and2246992@maricopa.edu", phone: "4805220062", year: 1 },
+            { name: "Lynn", email: "rlynnflores@hotmail.com", phone: "602-621-3142", year: 1 },
+            { name: "Patty Ortega", email: "Patty@pattyortega.com", phone: "6236066365", year: 1 },
+            { name: "David Rodriguez", email: "rodriguezdavid628@gmail.com", phone: "480-298-0679", year: 1 },
+            { name: "Jose Ruiz", email: "jangelruiz04@gmail.com", phone: "", year: 1 },
+            { name: "Ava Zaragoza", email: "avamayzaragoza@gmail.com", phone: "6236701225", year: 1 }
         ];
+        
         // YEAR 2 STUDENTS - $280 per unit (5 units per semester)
         const year2Students = [
-            { name: "Paris Ulvog", email: "ulvog.paris@gmail.com", phone: "6233875511", year: 2 },
+            { name: "Adali Payan", email: "Adaligabriela1024@gmail.com", phone: "6023918838", year: 2 },
+            { name: "Alva Bedolla", email: "abedolla214@yahoo.com", phone: "4802950406", year: 2 },
+            { name: "Ana Maria Lara", email: "Analara4949@gmail.com", phone: "602-793-4949", year: 2 },
+            { name: "Andre Beverly", email: "andre.d.beverly@gmail.com", phone: "463-222-1333", year: 2 },
+            { name: "Azsaunna Bryant", email: "azsaunna@gmail.com", phone: "2296039669", year: 2 },
+            { name: "Bernadette Ramos", email: "bernadetteramos@outlook.com", phone: "602-677-9136", year: 2 },
             { name: "Caprisha Williams", email: "caprisha81@gmail.com", phone: "6025507701", year: 2 },
-            { name: "Neftali Rivera", email: "jeyandtal@yahoo.com", phone: "2038247669", year: 2 },
-            { name: "Jessica Rivera", email: "jeyjey2282@yahoo.com", phone: "2035061167", year: 2 },
             { name: "Carmen Coleman", email: "carmenlcoleman2016@gmail.com", phone: "4808404860", year: 2 },
+            { name: "Cassandra Davis", email: "cassandraortiz07@gmail.com", phone: "8154091948", year: 2 },
+            { name: "Cne' Townsel", email: "cnetownsel@gmail.com", phone: "6147021166", year: 2 },
+            { name: "Cynthia Muse", email: "cynthiamuse89@gmail.com", phone: "6025270990", year: 2 },
+            { name: "Daniel Ash", email: "Dan911iel@gmail.com", phone: "6025509927", year: 2 },
+            { name: "Demian van der Nat", email: "Demian_vdnat@hotmail.com", phone: "6232751141", year: 2 },
+            { name: "Elizabeth Diaz", email: "d_elizabeth35@yahoo.com", phone: "480-635-6157", year: 2 },
+            { name: "Erica Cardenas", email: "erica@cardenasmarketing.com", phone: "602-451-8719", year: 2 },
+            { name: "Erika Beverly", email: "Erikasbeverly@gmail.com", phone: "8037438419", year: 2 },
+            { name: "Erika Lambert", email: "erikatownsend.dpt@gmail.com", phone: "", year: 2 },
+            { name: "Garner Denise", email: "Drgarner84@yahoo.com", phone: "7605191588", year: 2 },
+            { name: "Gihan Viani", email: "Vianigihan@gmail.com", phone: "4046322097", year: 2 },
+            { name: "IKA Sagayo", email: "csagayo@gmail.com", phone: "6028103182", year: 2 },
             { name: "Isis Bennifield", email: "isis.bennifield@gmail.com", phone: "6025021881", year: 2 },
             { name: "Jaydan Herrera", email: "jaydanpopo@gmail.com", phone: "6025582730", year: 2 },
-            { name: "Erika Lambert", email: "erikatownsend.dpt@gmail.com", phone: "", year: 2 },
-            { name: "Ty'Ran Lambert", email: "tyranlambert@gmail.com", phone: "3173246595", year: 2 },
-            { name: "Ana Maria Lara", email: "Analara4949@gmail.com", phone: "602-793-4949", year: 2 },
-            { name: "Marissa Castillo", email: "m.ambearxo@gmail.com", phone: "4802598479", year: 2 },
-            { name: "Onjalai Brown", email: "onjalaiis@gmail.com", phone: "5039353812", year: 2 },
-            { name: "Shauna Ash", email: "shaunaash01@gmail.com", phone: "6025509865", year: 2 },
-            { name: "IKA Sagayo", email: "csagayo@gmail.com", phone: "6028103182", year: 2 },
-            { name: "Daniel Ash", email: "Dan911iel@gmail.com", phone: "6025509927", year: 2 },
-            { name: "Cassandra Davis", email: "cassandraortiz07@gmail.com", phone: "8154091948", year: 2 },
-            { name: "Andre Beverly", email: "andre.d.beverly@gmail.com", phone: "463-222-1333", year: 2 },
-            { name: "Cne' Townsel", email: "cnetownsel@gmail.com", phone: "6147021166", year: 2 },
-            { name: "Katalina Patino", email: "katalinapatino@yahoo.com", phone: "2094092858", year: 2 },
-            { name: "Karizma Malone", email: "malonekarizma1@gmail.com", phone: "4804301693", year: 2 },
-            { name: "Elizabeth Diaz", email: "d_elizabeth35@yahoo.com", phone: "480-635-6157", year: 2 },
-            { name: "Kenyan Keegan", email: "keeganlive@live.com", phone: "6026393968", year: 2 },
-            { name: "Martha Gonzalez", email: "marthaveryblessedone@gmail.com", phone: "", year: 2 },
-            { name: "Mambi Ashu", email: "Laurettaashu@gmail.com", phone: "678-895-4009", year: 2 },
-            { name: "Erica Cardenas", email: "erica@cardenasmarketing.com", phone: "602-451-8719", year: 2 },
-            { name: "Azsaunna Bryant", email: "azsaunna@gmail.com", phone: "2296039669", year: 2 },
-            { name: "Cynthia Muse", email: "cynthiamuse89@gmail.com", phone: "6025270990", year: 2 },
-            { name: "Bernadette Ramos", email: "bernadetteramos@outlook.com", phone: "602-677-9136", year: 2 },
-            { name: "Jennifer Atudoroae", email: "jenniferatud@gmail.com", phone: "6024590881", year: 2 },
-            { name: "Gihan Viani", email: "Vianigihan@gmail.com", phone: "4046322097", year: 2 },
-            { name: "Michelle Sagayo", email: "mmsagayo@gmail.com", phone: "4802776302", year: 2 },
             { name: "Jen Grotte", email: "jengrotte@outlook.com", phone: "701-770-4202", year: 2 },
-            { name: "Adali Payan", email: "Adaligabriela1024@gmail.com", phone: "6023918838", year: 2 },
-            { name: "Demian van der Nat", email: "Demian_vdnat@hotmail.com", phone: "6232751141", year: 2 },
-            { name: "Garner Denise", email: "Drgarner84@yahoo.com", phone: "7605191588", year: 2 }
+            { name: "Jennifer Atudoroae", email: "jenniferatud@gmail.com", phone: "6024590881", year: 2 },
+            { name: "Jessica Rivera", email: "jeyjey2282@yahoo.com", phone: "2035061167", year: 2 },
+            { name: "Joanna Aguilar", email: "joannaa10028@gmail.com", phone: "4804696693", year: 2 },
+            { name: "Karizma Malone", email: "malonekarizma1@gmail.com", phone: "4804301693", year: 2 },
+            { name: "Katalina Patino", email: "katalinapatino@yahoo.com", phone: "2094092858", year: 2 },
+            { name: "Kenyan Keegan", email: "keeganlive@live.com", phone: "6026393968", year: 2 },
+            { name: "Mambi Ashu", email: "Laurettaashu@gmail.com", phone: "678-895-4009", year: 2 },
+            { name: "Marissa Castillo", email: "m.ambearxo@gmail.com", phone: "4802598479", year: 2 },
+            { name: "Martha Gonzalez", email: "marthaveryblessedone@gmail.com", phone: "", year: 2 },
+            { name: "Monique Quiñonez", email: "monique.quinon@yahoo.com", phone: "5205480717", year: 2 },
+            { name: "Neftali Rivera", email: "jeyandtal@yahoo.com", phone: "2038247669", year: 2 },
+            { name: "Nora Colindres", email: "Colindres.nora@gmail.com", phone: "5203015441", year: 2 },
+            { name: "Paris Ulvog", email: "ulvog.paris@gmail.com", phone: "6233875511", year: 2 },
+            { name: "Michelle Sagayo", email: "mmsagayo@gmail.com", phone: "4802776302", year: 2 },
+            { name: "Shauna Ash", email: "shaunaash01@gmail.com", phone: "6025509865", year: 2 },
+            { name: "Ty'Ran Lambert", email: "tyranlambert@gmail.com", phone: "3173246595", year: 2 },
+            { name: "Jesse Jackson", email: "jjermerejackson@gmail.com", phone: "8153862157", year: 2 },
+            { name: "Chelsea Jackson", email: "cdrichardson08@gmail.com", phone: "", year: 2 },
+            { name: "Amy Gaertner", email: "amygaertner1@gmail.com", phone: "", year: 2 },
+            { name: "Kristine Monaghan", email: "kristinejmo@gmail.com", phone: "", year: 2 },
+            { name: "Deborah Dee", email: "dee_deborah@hotmail.com", phone: "602-517-1578", year: 2 },
+            { name: "Onjalai Brown", email: "onjalaiis@gmail.com", phone: "5039353812", year: 2 }
         ];
 
         // Combine all students
@@ -670,6 +777,8 @@
         let checkIns = {};
         let filteredStudents = [];
         let currentTab = 'year1'; // Track current tab
+        let guestMode = false; // Track if guest mode is enabled
+        let guests = []; // Store guest information
 
         // Initialize
         window.onload = function() {
@@ -684,12 +793,50 @@
                 checkIns = allCheckIns[today] || {};
             }
             
+            // Load guests from localStorage
+            const savedGuests = localStorage.getItem('guests');
+            if (savedGuests) {
+                const allGuests = JSON.parse(savedGuests);
+                guests = allGuests[today] || [];
+            }
+            
+            // Load guest mode state
+            const savedGuestMode = localStorage.getItem('guestMode');
+            if (savedGuestMode === 'true') {
+                guestMode = true;
+                document.getElementById('guestModeCheckbox').checked = true;
+                document.getElementById('guestModeToggle').classList.add('active');
+                document.getElementById('guestsTab').style.display = 'block';
+            }
+            
             // Display current date
             updateDateDisplay();
             
             // Load students
             loadStudents();
         };
+
+        function toggleGuestMode() {
+            guestMode = document.getElementById('guestModeCheckbox').checked;
+            localStorage.setItem('guestMode', guestMode);
+            
+            const guestModeToggle = document.getElementById('guestModeToggle');
+            const guestsTab = document.getElementById('guestsTab');
+            
+            if (guestMode) {
+                guestModeToggle.classList.add('active');
+                guestsTab.style.display = 'block';
+            } else {
+                guestModeToggle.classList.remove('active');
+                guestsTab.style.display = 'none';
+                // Switch away from guests tab if currently on it
+                if (currentTab === 'guests') {
+                    switchTab('year1');
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab')[0].classList.add('active');
+                }
+            }
+        }
 
         function updateDateDisplay() {
             const now = new Date();
@@ -722,13 +869,15 @@
         }
 
         function loadStudents() {
-            let studentsToShow = [...realStudents];
+            let studentsToShow = [];
             
             // Filter by current tab
             if (currentTab === 'year1') {
-                studentsToShow = studentsToShow.filter(s => s.year === 1);
+                studentsToShow = [...realStudents].filter(s => s.year === 1);
             } else if (currentTab === 'year2') {
-                studentsToShow = studentsToShow.filter(s => s.year === 2);
+                studentsToShow = [...realStudents].filter(s => s.year === 2);
+            } else if (currentTab === 'guests') {
+                studentsToShow = [...guests];
             }
             
             // Sort alphabetically by last name
@@ -747,11 +896,13 @@
             const grid = document.getElementById('studentGrid');
             
             if (students.length === 0) {
+                const emptyMessage = currentTab === 'guests' ? 
+                    '<h3>No guests yet</h3><p>Enable Guest Night mode and add guests to see them here</p>' :
+                    '<h3>No students found</h3><p>Try adjusting your search or filter</p>';
                 grid.innerHTML = `
                     <div class="empty-state" style="grid-column: 1 / -1;">
                         <div class="empty-state-icon">🔍</div>
-                        <h3>No students found</h3>
-                        <p>Try adjusting your search or filter</p>
+                        ${emptyMessage}
                     </div>
                 `;
                 return;
@@ -768,6 +919,10 @@
                 const methodIcon = checkinMethod === 'online' ? '💻' : '🏫';
                 const methodText = checkinMethod === 'online' ? 'Online' : 'In-Person';
                 
+                // Show host information for guests
+                const hostInfo = student.isGuest && student.hostName ? 
+                    `<div style="font-size: 12px; color: var(--grey-dark); margin-top: 3px;">👥 Guest of ${student.hostName}</div>` : '';
+                
                 html += `
                     <div class="student-card ${checkedClass}" onclick="toggleCheckIn('${student.email}', '${student.name.replace(/'/g, "\\'")}')">
                         <div class="checkbox-wrapper">
@@ -775,6 +930,7 @@
                         </div>
                         <div class="student-info">
                             <div class="student-name">${displayName}</div>
+                            ${hostInfo}
                             ${isChecked ? `<div class="checkin-time">✓ ${methodIcon} ${methodText} at ${checkinTime}</div>` : ''}
                         </div>
                     </div>
@@ -874,7 +1030,8 @@
             const titles = {
                 'all': 'All Students Sign-In',
                 'year1': 'Year 1 Students Sign-In',
-                'year2': 'Year 2 Students Sign-In'
+                'year2': 'Year 2 Students Sign-In',
+                'guests': 'Guests Sign-In'
             };
             document.getElementById('checklistTitle').textContent = titles[tab];
             
@@ -888,20 +1045,23 @@
         function filterStudents() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
-            let studentsToShow = [...realStudents];
+            let studentsToShow = [];
             
             // Filter by current tab first
             if (currentTab === 'year1') {
-                studentsToShow = studentsToShow.filter(s => s.year === 1);
+                studentsToShow = [...realStudents].filter(s => s.year === 1);
             } else if (currentTab === 'year2') {
-                studentsToShow = studentsToShow.filter(s => s.year === 2);
+                studentsToShow = [...realStudents].filter(s => s.year === 2);
+            } else if (currentTab === 'guests') {
+                studentsToShow = [...guests];
             }
             
             // Filter by search
             if (searchTerm) {
                 studentsToShow = studentsToShow.filter(s => 
                     s.name.toLowerCase().includes(searchTerm) ||
-                    getDisplayName(s.name).toLowerCase().includes(searchTerm)
+                    getDisplayName(s.name).toLowerCase().includes(searchTerm) ||
+                    (s.hostName && s.hostName.toLowerCase().includes(searchTerm))
                 );
             }
             
@@ -997,6 +1157,15 @@
         // Modal functions for adding new students
         function openAddStudentModal() {
             document.getElementById('addStudentModal').classList.add('active');
+            
+            // Show/hide guest option based on guest mode
+            const guestTypeGroup = document.getElementById('guestTypeGroup');
+            if (guestMode) {
+                guestTypeGroup.style.display = 'block';
+            } else {
+                guestTypeGroup.style.display = 'none';
+            }
+            
             // Pre-select the current tab's year
             const yearSelect = document.getElementById('newStudentYear');
             if (currentTab === 'year1') {
@@ -1004,11 +1173,55 @@
             } else if (currentTab === 'year2') {
                 yearSelect.value = '2';
             }
+            
+            // Populate host dropdown with all students
+            populateHostDropdown();
+        }
+
+        function toggleGuestFields() {
+            const isGuest = document.getElementById('isGuestCheckbox').checked;
+            const yearGroup = document.getElementById('yearGroup');
+            const hostGroup = document.getElementById('hostGroup');
+            const yearSelect = document.getElementById('newStudentYear');
+            const hostSelect = document.getElementById('guestHost');
+            
+            if (isGuest) {
+                yearGroup.style.display = 'none';
+                hostGroup.style.display = 'block';
+                yearSelect.required = false;
+                hostSelect.required = true;
+            } else {
+                yearGroup.style.display = 'block';
+                hostGroup.style.display = 'none';
+                yearSelect.required = true;
+                hostSelect.required = false;
+            }
+        }
+
+        function populateHostDropdown() {
+            const hostSelect = document.getElementById('guestHost');
+            hostSelect.innerHTML = '<option value="">Select the student who brought you</option>';
+            
+            // Add all students as potential hosts
+            const allStudents = [...realStudents].sort((a, b) => a.name.localeCompare(b.name));
+            allStudents.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.email;
+                option.textContent = student.name;
+                hostSelect.appendChild(option);
+            });
         }
 
         function closeAddStudentModal() {
             document.getElementById('addStudentModal').classList.remove('active');
             document.getElementById('addStudentForm').reset();
+            
+            // Reset guest fields visibility
+            document.getElementById('isGuestCheckbox').checked = false;
+            document.getElementById('yearGroup').style.display = 'block';
+            document.getElementById('hostGroup').style.display = 'none';
+            document.getElementById('newStudentYear').required = true;
+            document.getElementById('guestHost').required = false;
         }
 
         function addNewStudent(event) {
@@ -1016,9 +1229,9 @@
             
             const firstName = document.getElementById('newFirstName').value.trim();
             const lastName = document.getElementById('newLastName').value.trim();
-            const year = parseInt(document.getElementById('newStudentYear').value);
+            const isGuest = document.getElementById('isGuestCheckbox').checked;
             
-            if (!firstName || !lastName || !year) {
+            if (!firstName || !lastName) {
                 alert('Please fill in all required fields.');
                 return;
             }
@@ -1029,52 +1242,120 @@
             // Create temporary email (will be updated later by admin)
             const tempEmail = `temp_${firstName.toLowerCase()}_${lastName.toLowerCase()}_${Date.now()}@temporary.com`;
             
-            // Create new student object
-            const newStudent = {
-                name: fullName,
-                email: tempEmail,
-                phone: '',
-                year: year,
-                isTemporary: true,
-                addedDate: new Date().toISOString()
-            };
-            
-            // Add to appropriate year array
-            if (year === 1) {
-                year1Students.push(newStudent);
+            if (isGuest) {
+                // Handle guest addition
+                const hostEmail = document.getElementById('guestHost').value;
+                if (!hostEmail) {
+                    alert('Please select who brought you.');
+                    return;
+                }
+                
+                // Find host student
+                const hostStudent = realStudents.find(s => s.email === hostEmail);
+                if (!hostStudent) {
+                    alert('Host student not found.');
+                    return;
+                }
+                
+                // Create guest object
+                const newGuest = {
+                    name: fullName,
+                    email: tempEmail,
+                    phone: '',
+                    isGuest: true,
+                    hostEmail: hostEmail,
+                    hostName: hostStudent.name,
+                    addedDate: new Date().toISOString()
+                };
+                
+                // Add to guests array
+                guests.push(newGuest);
+                
+                // Save guests to localStorage
+                const today = new Date().toDateString();
+                const savedGuests = localStorage.getItem('guests');
+                let allGuests = savedGuests ? JSON.parse(savedGuests) : {};
+                allGuests[today] = guests;
+                localStorage.setItem('guests', JSON.stringify(allGuests));
+                
+                // Check them in immediately as in-person
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                checkIns[tempEmail] = {
+                    time: timeString,
+                    method: 'in-person',
+                    fullName: fullName
+                };
+                saveCheckIns();
+                
+                // Close modal
+                closeAddStudentModal();
+                
+                // Switch to guests tab and reload
+                currentTab = 'guests';
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.getElementById('guestsTab').classList.add('active');
+                loadStudents();
+                
+                // Show success message
+                alert(`✅ Welcome ${firstName}! You've been added as a guest of ${hostStudent.name} and checked in.`);
+                
             } else {
-                year2Students.push(newStudent);
+                // Handle regular student addition
+                const year = parseInt(document.getElementById('newStudentYear').value);
+                
+                if (!year) {
+                    alert('Please select your year.');
+                    return;
+                }
+                
+                // Create new student object
+                const newStudent = {
+                    name: fullName,
+                    email: tempEmail,
+                    phone: '',
+                    year: year,
+                    isTemporary: true,
+                    addedDate: new Date().toISOString()
+                };
+                
+                // Add to appropriate year array
+                if (year === 1) {
+                    year1Students.push(newStudent);
+                } else {
+                    year2Students.push(newStudent);
+                }
+                
+                // Update realStudents array
+                realStudents.push(newStudent);
+                
+                // Save to localStorage
+                localStorage.setItem('realStudents', JSON.stringify(realStudents));
+                
+                // Save temporary students separately for admin review
+                let tempStudents = JSON.parse(localStorage.getItem('temporaryStudents') || '[]');
+                tempStudents.push(newStudent);
+                localStorage.setItem('temporaryStudents', JSON.stringify(tempStudents));
+                
+                // Check them in immediately as in-person
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                checkIns[tempEmail] = {
+                    time: timeString,
+                    method: 'in-person',
+                    fullName: fullName
+                };
+                saveCheckIns();
+                
+                // Close modal
+                closeAddStudentModal();
+                
+                // Reload students
+                loadStudents();
+                
+                // Show success message
+                alert(`✅ Welcome ${firstName}! You've been added and checked in.\n\nYour information will be reviewed by the administrator.`);
             }
-            
-            // Update realStudents array
-            realStudents.push(newStudent);
-            
-            // Save to localStorage
-            localStorage.setItem('realStudents', JSON.stringify(realStudents));
-            
-            // Save temporary students separately for admin review
-            let tempStudents = JSON.parse(localStorage.getItem('temporaryStudents') || '[]');
-            tempStudents.push(newStudent);
-            localStorage.setItem('temporaryStudents', JSON.stringify(tempStudents));
-            
-            // Check them in immediately as in-person
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-            checkIns[tempEmail] = {
-                time: timeString,
-                method: 'in-person',
-                fullName: fullName
-            };
-            saveCheckIns();
-            
-            // Close modal
-            closeAddStudentModal();
-            
-            // Reload students
-            loadStudents();
-            
-            // Show success message
-            alert(`✅ Welcome ${firstName}! You've been added and checked in.\n\nYour information will be reviewed by the administrator.`);
         }
 
         // Close modal when clicking outside
